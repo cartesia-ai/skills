@@ -165,6 +165,7 @@ class CartesiaVoiceClient {
     this.accessToken = accessToken;
     this.ws = null;
     this.audioContext = null;
+    this.mediaStream = null;
   }
 
   async connect() {
@@ -209,10 +210,10 @@ class CartesiaVoiceClient {
   }
 
   async startMicrophone() {
-    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    this.mediaStream = await navigator.mediaDevices.getUserMedia({ audio: true });
     this.audioContext = new AudioContext({ sampleRate: 16000 });
 
-    const source = this.audioContext.createMediaStreamSource(stream);
+    const source = this.audioContext.createMediaStreamSource(this.mediaStream);
     const processor = this.audioContext.createScriptProcessor(4096, 1, 1);
 
     processor.onaudioprocess = (e) => {
@@ -256,6 +257,7 @@ class CartesiaVoiceClient {
   }
 
   disconnect() {
+    this.mediaStream?.getTracks().forEach(track => track.stop());
     this.ws?.close();
     this.audioContext?.close();
   }

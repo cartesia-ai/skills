@@ -219,19 +219,20 @@ class FormCollector:
         value: Annotated[str, "The value provided by the user"],
     ) -> dict:
         """Record a form field value."""
-        self.fields[self.current_field] = value
+        recorded_field = self.current_field
+        self.fields[recorded_field] = value
 
         # Move to next field
-        idx = self.field_order.index(self.current_field)
+        idx = self.field_order.index(recorded_field)
         if idx + 1 < len(self.field_order):
             self.current_field = self.field_order[idx + 1]
             return {
-                "recorded": self.current_field,
+                "recorded": recorded_field,
                 "next_question": f"What is your {self.current_field}?",
                 "complete": False,
             }
         return {
-            "recorded": self.current_field,
+            "recorded": recorded_field,
             "complete": True,
             "collected": self.fields,
         }
