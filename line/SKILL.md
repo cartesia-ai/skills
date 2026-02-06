@@ -81,24 +81,7 @@ Run with: `ANTHROPIC_API_KEY=your-key python main.py`
 my_agent/
 ├── main.py          # VoiceAgentApp entry point (REQUIRED)
 ├── cartesia.toml    # Cartesia deployment config (REQUIRED)
-├── tools.py         # Custom tool definitions (optional)
 └── pyproject.toml   # Dependencies: cartesia-line
-```
-
-### cartesia.toml Template
-
-```toml
-[cartesia]
-name = "My Agent Name"
-description = "Brief description of the agent"
-version = "1.0.0"
-
-[cartesia.server]
-port = 8000
-host = "0.0.0.0"
-
-[cartesia.environment]
-required_vars = ["GEMINI_API_KEY"]  # List required env vars
 ```
 
 ## Core Concepts
@@ -419,7 +402,7 @@ async def record_answer(
 
 ## Common Mistakes to Avoid
 
-1. **Missing `end_call` tool** - Always include it or calls can't end gracefully
+1. **Missing `end_call` tool** - If not included (or a similar custom tool), the agent cannot end the call on its own and must wait for the user to hang up
 
 2. **Raising exceptions in tools** - Return user-friendly error strings:
    ```python

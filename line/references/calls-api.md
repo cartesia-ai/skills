@@ -76,6 +76,9 @@ Send immediately after connection to configure the session:
   "call_id": "unique-call-id",
   "input_format": "pcm_16000",
   "output_format": "pcm_16000",
+  "config": {
+    "voice_id": "your-voice-id"
+  },
   "agent": {
     "system_prompt": "You are a helpful assistant.",
     "introduction": "Hello! How can I help you today?"

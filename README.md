@@ -17,6 +17,12 @@ Build voice agents with the Cartesia Line SDK. Supports 100+ LLM providers via L
 - Background tool execution for complex reasoning
 - Real-time interruption handling
 
+## Installation
+
+```bash
+npx add skills cartesia-ai/skills
+```
+
 ## Configuration
 
 Voice agents require a Cartesia API key and at least one LLM provider API key.

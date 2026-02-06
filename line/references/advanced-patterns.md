@@ -35,8 +35,7 @@ class ChatSupervisorAgent(AgentClass):
 
     async def process(self, env: TurnEnv, event: InputEvent):
         if isinstance(event, CallEnded):
-            await self._cleanup()
-            return
+            return  # Cleanup handled by Line platform
         async for output in self._chatter.process(env, event):
             yield output
 

@@ -76,6 +76,8 @@ litellm.exceptions.BadRequestError: Unknown model: my-model
 "anthropic/claude-sonnet-4-20250514"       # Anthropic
 "gemini/gemini-2.5-flash-preview-09-2025"  # Google
 "azure/my-deployment"                       # Azure OpenAI
+
+# Full model list: https://models.litellm.ai/
 ```
 
 ### Missing API Key
