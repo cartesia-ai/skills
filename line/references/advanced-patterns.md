@@ -7,7 +7,8 @@ Advanced techniques for Line SDK voice agents including background tools, state 
 Use a fast model for responsive conversation while accessing a powerful model for complex reasoning via background tools:
 
 ```python
-from typing import Annotated
+import os
+from typing import Annotated, Optional
 from line.agent import AgentClass, TurnEnv
 from line.events import AgentSendText, CallEnded, InputEvent, UserTextSent
 from line.llm_agent import LlmAgent, LlmConfig, ToolEnv, end_call, loopback_tool
@@ -16,16 +17,20 @@ from line.llm_agent import LlmAgent, LlmConfig, ToolEnv, end_call, loopback_tool
 class ChatSupervisorAgent(AgentClass):
     """Fast Haiku for chat + powerful Opus for complex questions via background tool."""
 
-    def __init__(self):
+    def __init__(self, api_key: Optional[str] = None):
+        self._api_key = api_key or os.getenv("ANTHROPIC_API_KEY")
+
         # Supervisor: powerful model for deep reasoning (only called via tool)
         self._supervisor = LlmAgent(
             model="anthropic/claude-opus-4-5",
+            api_key=self._api_key,
             config=LlmConfig(system_prompt="You are a deep reasoning assistant..."),
         )
 
         # Chatter: fast model for responsive conversation
         self._chatter = LlmAgent(
             model="anthropic/claude-haiku-4-5-20251001",
+            api_key=self._api_key,
             tools=[self.ask_supervisor, end_call],
             config=LlmConfig(
                 system_prompt="You handle conversations. Use ask_supervisor for complex questions.",
@@ -35,9 +40,14 @@ class ChatSupervisorAgent(AgentClass):
 
     async def process(self, env: TurnEnv, event: InputEvent):
         if isinstance(event, CallEnded):
-            return  # Cleanup handled by Line platform
+            await self._cleanup()
+            return
         async for output in self._chatter.process(env, event):
             yield output
+
+    async def _cleanup(self):
+        await self._chatter.cleanup()
+        await self._supervisor.cleanup()
 
     @loopback_tool(is_background=True)
     async def ask_supervisor(
@@ -153,6 +163,9 @@ from line.events import (
     # Tool tracking
     AgentToolCalled,    # Tool invoked (tool_call_id, tool_name, tool_args)
     AgentToolReturned,  # Tool result (tool_call_id, tool_name, tool_args, result)
+
+    # Dynamic call settings
+    AgentUpdateCall,    # Update voice: AgentUpdateCall(voice_id="...", pronunciation_dict_id="...")
 
     # Logging
     LogMetric,          # Log metric: LogMetric(name="latency", value=1.5)
@@ -394,30 +407,43 @@ class InterruptionAwareAgent:
 
 ## Logging and Metrics
 
-Emit logs and metrics from tools:
+Use `loguru.logger` for logging from tools. Note that `LogMetric` and `LogMessage` are OutputEvent types that can only be emitted from `@passthrough_tool` or wrapper agents that yield OutputEvents directly — yielding them from a `@loopback_tool` would serialize them as tool result strings rather than processing them as log events.
 
 ```python
-from line.events import LogMetric, LogMessage
+from loguru import logger
 
 @loopback_tool
-async def timed_operation(ctx: ToolEnv, query: Annotated[str, "Query"]):
-    """Operation with timing metrics."""
+async def timed_operation(ctx: ToolEnv, query: Annotated[str, "Query"]) -> str:
+    """Operation with timing."""
     import time
     start = time.time()
 
     result = await slow_operation(query)
 
-    # Log timing metric
     elapsed = time.time() - start
-    yield LogMetric(name="operation_latency_ms", value=elapsed * 1000)
+    logger.info(f"operation_complete: query={query} elapsed={elapsed:.2f}s")
+    return result
+```
 
-    # Log event
+To emit `LogMetric` or `LogMessage` as actual OutputEvents, use a `@passthrough_tool` or a wrapper agent:
+
+```python
+from line.events import LogMetric, LogMessage
+
+@passthrough_tool
+async def timed_action(ctx: ToolEnv, query: Annotated[str, "Query"]):
+    """Action with structured logging (passthrough — results bypass LLM)."""
+    import time
+    start = time.time()
+
+    await perform_action(query)
+
+    elapsed = time.time() - start
+    yield LogMetric(name="action_latency_ms", value=elapsed * 1000)
     yield LogMessage(
-        name="operation_complete",
+        name="action_complete",
         level="info",
         message=f"Completed query in {elapsed:.2f}s",
-        metadata={"query": query}
+        metadata={"query": query},
     )
-
-    return result
 ```

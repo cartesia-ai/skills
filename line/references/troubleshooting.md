@@ -7,11 +7,13 @@ Common issues and solutions when building Line SDK voice agents.
 ### Missing ctx Parameter
 
 **Error:**
+
 ```
 TypeError: Tool 'my_tool' must have 'ctx' or 'context' as first parameter
 ```
 
 **Fix:** First parameter must be `ctx: ToolEnv`:
+
 ```python
 # Wrong
 @loopback_tool
@@ -27,11 +29,13 @@ async def my_tool(ctx: ToolEnv, order_id: Annotated[str, "Order ID"]):
 ### Missing event Parameter (Handoff Tools)
 
 **Error:**
+
 ```
 TypeError: Handoff tool 'transfer_to_support' must have 'event' parameter
 ```
 
 **Fix:** Handoff tools require an `event` parameter:
+
 ```python
 # Wrong
 @handoff_tool
@@ -40,23 +44,24 @@ async def transfer_to_support(ctx: ToolEnv, reason: str):
 
 # Correct
 @handoff_tool
-async def transfer_to_support(ctx: ToolEnv, event, reason: Annotated[str, "Reason"]):
+async def transfer_to_support(ctx: ToolEnv, reason: Annotated[str, "Reason"], event):
     if isinstance(event, AgentHandedOff):
         ...
 ```
 
 ### Wrong Parameter Order
 
-**Fix:** Order must be: `ctx`, then `event` (for handoff), then other parameters:
+**Fix:** `ctx` must be the first parameter. `event` is required but can be in any position after `ctx`:
+
 ```python
-# Wrong
+# Wrong - ctx is not first
 @handoff_tool
 async def my_handoff(reason: str, ctx: ToolEnv, event):
     ...
 
-# Correct
+# Correct - ctx first, event last (SDK convention)
 @handoff_tool
-async def my_handoff(ctx: ToolEnv, event, reason: Annotated[str, "Reason"]):
+async def my_handoff(ctx: ToolEnv, reason: Annotated[str, "Reason"], event):
     ...
 ```
 
@@ -65,11 +70,13 @@ async def my_handoff(ctx: ToolEnv, event, reason: Annotated[str, "Reason"]):
 ### Unknown Model Error
 
 **Error:**
+
 ```
 litellm.exceptions.BadRequestError: Unknown model: my-model
 ```
 
 **Fix:** Use correct LiteLLM model string format:
+
 ```python
 # Provider prefixes
 "gpt-4o"                                   # OpenAI (no prefix)
@@ -83,11 +90,13 @@ litellm.exceptions.BadRequestError: Unknown model: my-model
 ### Missing API Key
 
 **Error:**
+
 ```
 AuthenticationError: No API key provided
 ```
 
 **Fix:** Set the appropriate environment variable:
+
 ```bash
 export OPENAI_API_KEY=sk-...
 export ANTHROPIC_API_KEY=sk-ant-...
@@ -95,6 +104,7 @@ export GEMINI_API_KEY=AI...
 ```
 
 Or pass directly:
+
 ```python
 LlmAgent(
     model="gpt-4o",
@@ -118,11 +128,13 @@ For the fallback, install: `pip install duckduckgo-search`
 ### Invalid DTMF Button
 
 **Error:**
+
 ```
 ValueError: Invalid DTMF button: 10
 ```
 
 **Fix:** DTMF buttons must be strings, not integers:
+
 ```python
 # Wrong
 AgentSendDtmf(button=5)    # Integer
@@ -141,11 +153,13 @@ Valid buttons: `"0"`, `"1"`, `"2"`, `"3"`, `"4"`, `"5"`, `"6"`, `"7"`, `"8"`, `"
 ### Transfer Call Fails
 
 **Error:**
+
 ```
 I'm sorry, that phone number appears to be invalid.
 ```
 
 **Fix:** Use E.164 format (international format with +):
+
 ```python
 # Wrong
 AgentTransferCall(target_phone_number="555-123-4567")
@@ -163,6 +177,7 @@ AgentTransferCall(target_phone_number="+44207946090")  # UK
 **Possible causes:**
 
 1. **Empty introduction:**
+
 ```python
 # This makes agent wait for user
 config=LlmConfig(introduction="")
@@ -171,14 +186,16 @@ config=LlmConfig(introduction="")
 config=LlmConfig(introduction="Hello! How can I help?")
 ```
 
-2. **Introduction is None:**
+1. **Introduction is None:**
+
 ```python
 # None also skips introduction
 config=LlmConfig(introduction=None)
 ```
 
-3. **CallStarted not triggering:**
+1. **CallStarted not triggering:**
 Check your run filter includes `CallStarted`:
+
 ```python
 def run_filter(event):
     return isinstance(event, (CallStarted, UserTurnEnded, CallEnded))
@@ -191,6 +208,7 @@ def run_filter(event):
 **Issue:** LLM always provides a value even when optional
 
 **Fix:** Use default values, not just `Optional[T]`:
+
 ```python
 # Wrong - Optional doesn't make it optional for the LLM schema
 @loopback_tool
@@ -214,6 +232,7 @@ async def search(
 **Possible causes:**
 
 1. **Poor description:** Make the tool description clear and action-oriented:
+
 ```python
 # Vague
 """Get data."""
@@ -222,7 +241,8 @@ async def search(
 """Look up the current status and location of a customer's order by order ID."""
 ```
 
-2. **Missing from system prompt:** Guide the LLM to use the tool:
+1. **Missing from system prompt:** Guide the LLM to use the tool:
+
 ```python
 config=LlmConfig(
     system_prompt="""You are an order assistant.
@@ -231,7 +251,7 @@ Always confirm the order ID before looking it up."""
 )
 ```
 
-3. **Wrong tool type:** Ensure tool type matches use case:
+1. **Wrong tool type:** Ensure tool type matches use case:
    - `@loopback_tool` - Results inform LLM response
    - `@passthrough_tool` - Actions bypass LLM
    - `@handoff_tool` - Transfer to another agent
@@ -240,22 +260,23 @@ Always confirm the order ID before looking it up."""
 
 ### Background Tool Results Lost
 
-**Issue:** Background tool completes but results aren't used
+**Issue:** Background tool completes but user waits in silence
 
-**Fix:** Background tools must yield, not return:
+**Fix:** Use `yield` for interim status messages. A plain `return` does work (the SDK normalizes it to a single yield), but it provides no interim feedback:
+
 ```python
-# Wrong - return doesn't trigger loopback
+# Works, but no interim feedback - user waits in silence
 @loopback_tool(is_background=True)
 async def slow_lookup(ctx: ToolEnv, id: Annotated[str, "ID"]):
     result = await slow_api.fetch(id)
-    return result  # Won't trigger completion!
+    return result  # Triggers one completion, but no interim status
 
-# Correct - yield triggers loopback
+# Better - yield interim status so agent can speak while waiting
 @loopback_tool(is_background=True)
 async def slow_lookup(ctx: ToolEnv, id: Annotated[str, "ID"]):
-    yield "Looking that up..."
+    yield "Looking that up..."        # Immediate feedback
     result = await slow_api.fetch(id)
-    yield result  # Triggers new completion
+    yield result                      # Final result
 ```
 
 ## Handoff Issues
@@ -265,6 +286,7 @@ async def slow_lookup(ctx: ToolEnv, id: Annotated[str, "ID"]):
 **Issue:** After handoff, subsequent events don't reach the target agent
 
 **Fix:** Ensure handoff tool stores the target correctly:
+
 ```python
 @handoff_tool
 async def transfer(ctx: ToolEnv, event):
@@ -285,9 +307,11 @@ async def transfer(ctx: ToolEnv, event):
 ### Connection Closes Immediately
 
 **Check:**
+
 1. Server is running: `curl http://localhost:8000/status`
 2. WebSocket URL is correct (from `/chats` response)
 3. No exceptions in `get_agent`:
+
 ```python
 async def get_agent(env, call_request):
     try:
@@ -300,6 +324,7 @@ async def get_agent(env, call_request):
 ### Connection Drops Mid-Call
 
 **Check logs for:**
+
 - `Error in agent.process` - Exception in your agent code
 - `Error in websocket loop` - Message processing error
 - `WebSocket disconnected` - Client disconnected
@@ -338,8 +363,14 @@ from line.agent import TurnEnv
 
 async def test_tool():
     ctx = ToolEnv(turn_env=TurnEnv())
+
+    # For tools that use `return`:
     result = await my_tool.func(ctx, param="test")
     print(f"Result: {result}")
+
+    # For tools that use `yield` (async generators):
+    async for result in my_generator_tool.func(ctx, param="test"):
+        print(f"Result: {result}")
 
 import asyncio
 asyncio.run(test_tool())

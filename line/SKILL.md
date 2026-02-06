@@ -476,12 +476,13 @@ from line.llm_agent import ToolEnv
 # Multi-agent
 from line.llm_agent import agent_as_handoff
 
-# Events (for passthrough/handoff tools)
+# Events (for passthrough/handoff tools and custom agents)
 from line.events import (
     AgentSendText,
     AgentEndCall,
     AgentTransferCall,
     AgentSendDtmf,
+    AgentUpdateCall,
 )
 ```
 

@@ -73,8 +73,8 @@ billing_agent = LlmAgent(
 @handoff_tool
 async def transfer_to_billing(
     ctx: ToolEnv,
-    event,  # REQUIRED: Must have 'event' parameter for handoff tools
     reason: Annotated[str, "Reason for billing transfer"],
+    event,  # REQUIRED: Must have 'event' parameter for handoff tools
 ):
     """Transfer to billing department for payment issues."""
     if isinstance(event, AgentHandedOff):
@@ -177,6 +177,8 @@ For sophisticated content filtering, use a separate LLM:
 ```python
 from dataclasses import dataclass
 import json
+# NOTE: LLMProvider and Message are internal APIs subject to change.
+# Import from the internal module directly:
 from line.llm_agent.provider import LLMProvider, Message
 
 @dataclass
