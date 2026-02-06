@@ -369,24 +369,27 @@ Default filters:
 
 ## Interruption Handling
 
-By default, `UserTurnStarted` cancels the current agent response. For graceful handling:
+By default, `UserTurnStarted` cancels the current agent response by raising `asyncio.CancelledError`. To detect when an interruption occurred:
 
 ```python
+import asyncio
+
 class InterruptionAwareAgent:
     def __init__(self, inner_agent):
         self.inner = inner_agent
         self.was_interrupted = False
 
     async def process(self, env, event):
-        if isinstance(event, UserTurnStarted):
+        try:
+            if self.was_interrupted:
+                self.was_interrupted = False
+                # Interruption occurred on previous turn
+
+            async for output in self.inner.process(env, event):
+                yield output
+        except asyncio.CancelledError:
             self.was_interrupted = True
-
-        if isinstance(event, UserTurnEnded) and self.was_interrupted:
-            self.was_interrupted = False
-            # Could add context about interruption to prompt
-
-        async for output in self.inner.process(env, event):
-            yield output
+            raise  # Re-raise to allow proper cleanup
 ```
 
 ## Logging and Metrics

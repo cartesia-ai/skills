@@ -264,33 +264,6 @@ transfer them to the appropriate department:
 )
 ```
 
-## Handoff with Context
-
-Pass context to the next agent via the handoff message:
-
-```python
-@handoff_tool
-async def transfer_with_summary(
-    ctx: ToolEnv,
-    event,
-    summary: Annotated[str, "Brief summary of the conversation so far"],
-    department: Annotated[Literal["sales", "support", "billing"], "Target department"],
-):
-    """Transfer with conversation context."""
-    agents = {"sales": sales_agent, "support": support_agent, "billing": billing_agent}
-    target = agents[department]
-
-    if isinstance(event, AgentHandedOff):
-        yield AgentSendText(text=f"Transferring you to {department}. I've shared a summary of our conversation.")
-        # The summary is now in the conversation history for the next agent
-        async for output in target.process(ctx.turn_env, CallStarted()):
-            yield output
-        return
-
-    async for output in target.process(ctx.turn_env, event):
-        yield output
-```
-
 ## Cleanup
 
 Agents with resources should implement cleanup:
