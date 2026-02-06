@@ -22,6 +22,7 @@ curl -X POST https://api.cartesia.ai/agents/access-token \
 ```
 
 Response:
+
 ```json
 {
   "access_token": "eyJhbGciOiJIUzI1NiIs...",
@@ -43,40 +44,21 @@ const ws = new WebSocket(
 );
 ```
 
-## WebSocket Protocol
-
-### Connection Flow
-
-```
-Client                              Server
-  │                                    │
-  │──── WebSocket Connect ────────────▶│
-  │                                    │
-  │──── start event ──────────────────▶│
-  │                                    │
-  │◀─── ack event ────────────────────│
-  │                                    │
-  │──── media_input (audio) ──────────▶│
-  │                                    │
-  │◀─── media_output (audio) ─────────│
-  │                                    │
-  │◀─── clear (on interruption) ──────│
-  │                                    │
-```
-
 ### Event Types
 
 #### `start` - Initiate the Call
 
-Send immediately after connection to configure the session:
+Send immediately after connection to configure the session.
+
+- `config` overrides your agent's default input audio settings
+- `stream_id` is optional. If not provided, the server generates one and returns it in the `ack` event
 
 ```json
 {
   "event": "start",
-  "call_id": "unique-call-id",
-  "input_format": "pcm_16000",
-  "output_format": "pcm_16000",
+  "stream_id": "unique-stream-id",
   "config": {
+    "input_format": "pcm_16000",
     "voice_id": "your-voice-id"
   },
   "agent": {
@@ -97,7 +79,10 @@ Stream user audio to the agent:
 ```json
 {
   "event": "media_input",
-  "data": "base64-encoded-audio-data"
+  "stream_id": "unique-stream-id",
+  "media": {
+    "payload": "base64-encoded-audio-data"
+  }
 }
 ```
 
@@ -108,18 +93,29 @@ Agent responses come as audio chunks:
 ```json
 {
   "event": "media_output",
-  "data": "base64-encoded-audio-data"
+  "stream_id": "unique-stream-id",
+  "media": {
+    "payload": "base64-encoded-audio-data"
+  }
 }
 ```
 
 #### `ack` - Server Acknowledgment
 
-Confirmation that the server received and processed an event:
+Confirms stream configuration. Returns the server-generated `stream_id` if one wasn't provided in the `start` event.
 
 ```json
 {
   "event": "ack",
-  "ref": "start"
+  "stream_id": "unique-stream-id",
+  "config": {
+    "input_format": "pcm_16000",
+    "voice_id": "your-voice-id"
+  },
+  "agent": {
+    "system_prompt": "You are a helpful assistant.",
+    "introduction": "Hello! How can I help you today?"
+  }
 }
 ```
 
@@ -129,22 +125,24 @@ Sent when the user interrupts the agent (barge-in). Stop playing current audio:
 
 ```json
 {
-  "event": "clear"
+  "event": "clear",
+  "stream_id": "unique-stream-id"
 }
 ```
 
 #### `dtmf` - DTMF Tones
 
-Send or receive touch-tone signals:
+Send DTMF (dual-tone multi-frequency) tones to the agent:
 
 ```json
 {
   "event": "dtmf",
-  "button": "5"
+  "stream_id": "unique-stream-id",
+  "dtmf": "5"
 }
 ```
 
-Valid buttons: `"0"` - `"9"`, `"*"`, `"#"`
+Valid values: `"0"` - `"9"`, `"*"`, `"#"`
 
 ## Audio Formats
 
@@ -167,24 +165,30 @@ class CartesiaVoiceClient {
     this.agentId = agentId;
     this.accessToken = accessToken;
     this.ws = null;
+    this.streamId = null;
     this.audioContext = null;
     this.mediaStream = null;
   }
 
   async connect() {
-    // Connect to Cartesia
+    // Connect to Cartesia with auth via headers
     this.ws = new WebSocket(
-      `wss://api.cartesia.ai/agents/stream/${this.agentId}`
+      `wss://api.cartesia.ai/agents/stream/${this.agentId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${this.accessToken}`,
+          "Cartesia-Version": "2025-04-16",
+        },
+      }
     );
 
     this.ws.onopen = () => {
-      // Send start event with auth
+      // Send start event to initialize the stream
       this.ws.send(JSON.stringify({
         event: "start",
-        call_id: crypto.randomUUID(),
-        access_token: this.accessToken,
-        input_format: "pcm_16000",
-        output_format: "pcm_16000",
+        config: {
+          input_format: "pcm_16000",
+        },
         agent: {
           system_prompt: "You are a helpful assistant.",
           introduction: "Hello! How can I help?"
@@ -197,13 +201,14 @@ class CartesiaVoiceClient {
 
       switch (message.event) {
         case "media_output":
-          this.playAudio(message.data);
+          this.playAudio(message.media.payload);
           break;
         case "clear":
           this.stopPlayback();
           break;
         case "ack":
-          console.log("Server acknowledged:", message.ref);
+          this.streamId = message.stream_id;
+          console.log("Stream initialized:", this.streamId);
           break;
       }
     };
@@ -220,14 +225,15 @@ class CartesiaVoiceClient {
     const processor = this.audioContext.createScriptProcessor(4096, 1, 1);
 
     processor.onaudioprocess = (e) => {
-      if (this.ws?.readyState === WebSocket.OPEN) {
+      if (this.ws?.readyState === WebSocket.OPEN && this.streamId) {
         const pcmData = e.inputBuffer.getChannelData(0);
         const int16Data = this.floatTo16BitPCM(pcmData);
         const base64 = btoa(String.fromCharCode(...new Uint8Array(int16Data.buffer)));
 
         this.ws.send(JSON.stringify({
           event: "media_input",
-          data: base64
+          stream_id: this.streamId,
+          media: { payload: base64 }
         }));
       }
     };
@@ -275,21 +281,20 @@ await client.connect();
 
 ### Keepalive
 
-Send periodic pings to maintain the connection:
+Send standard WebSocket ping frames to prevent inactivity timeouts:
 
 ```javascript
+// Requires the Node.js `ws` library — the browser WebSocket API does not expose ping()
 setInterval(() => {
   if (ws.readyState === WebSocket.OPEN) {
-    ws.send(JSON.stringify({ event: "ping" }));
+    ws.ping();
   }
-}, 30000);
+}, 60000); // Send ping every 60 seconds
 ```
 
 ### Timeouts
 
-- **Connection timeout**: 30 seconds to establish WebSocket
-- **Idle timeout**: 60 seconds of no audio before server closes connection
-- **Max call duration**: Configured per agent (default: 30 minutes)
+- **Idle timeout**: 180 seconds of no messages before the server closes the connection. Any client message (media_input, dtmf, custom events, or WebSocket ping frames) resets the timer.
 
 ### Error Handling
 
@@ -299,27 +304,24 @@ ws.onerror = (error) => {
 };
 
 ws.onclose = (event) => {
-  if (event.code === 1000) {
-    console.log("Call ended normally");
-  } else if (event.code === 4001) {
-    console.error("Authentication failed");
-  } else if (event.code === 4002) {
-    console.error("Agent not found");
-  } else {
-    console.error("Connection closed:", event.code, event.reason);
+  console.log("Connection closed:", event.code, event.reason);
+
+  if (event.code === 1000 && event.reason === "connection idle timeout") {
+    // Reconnect and resend start event
+  } else if (event.code === 1000) {
+    // Normal closure — agent ended the call
   }
 };
 ```
 
-### Common Close Codes
+### Close Reasons
 
-| Code | Meaning |
-|------|---------|
-| 1000 | Normal closure |
-| 4001 | Authentication failed |
-| 4002 | Agent not found |
-| 4003 | Rate limited |
-| 4004 | Invalid message format |
+The server closes connections with code `1000` (Normal Closure). Check the `reason` field to distinguish:
+
+| Reason | Description |
+|--------|-------------|
+| `"call ended by agent"` | The agent ended the call. May include additional context: `"call ended by agent, reason: {details}"` |
+| `"connection idle timeout"` | No messages received for 180 seconds |
 
 ## Mobile Integration
 
@@ -337,8 +339,9 @@ Use `react-native-websocket` and `expo-av` or `react-native-audio-api` for cross
 
 ## Best Practices
 
-1. **Buffer audio** - Queue outgoing audio and send in chunks (e.g., 100ms intervals)
-2. **Handle interruptions** - Stop playback immediately on `clear` events
-3. **Graceful reconnection** - Implement exponential backoff for reconnects
-4. **Echo cancellation** - Use platform AEC to prevent feedback loops
-5. **Visual feedback** - Show speaking/listening states to users
+1. **Send `start` first** — The connection closes if any other event is sent before `start`.
+2. **Choose the right audio format** — Match the format to your source: `mulaw_8000` for telephony, `pcm_44100` for web clients.
+3. **Handle closes cleanly** — Always capture close codes and reasons for debugging and recovery.
+4. **Keep the connection alive** — Send WebSocket ping frames every 60–90 seconds to avoid the 180-second inactivity timeout.
+5. **Manage stream IDs** — Provide your own `stream_id` values to improve observability across systems.
+6. **Recover from idle timeouts** — On `1000 / connection idle timeout`, reconnect and resend a `start` event.
