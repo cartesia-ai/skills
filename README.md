@@ -1,4 +1,6 @@
-# Cartesia Skills
+<p align="center">
+  <img src="assets/skills_banner.png" alt="Cartesia Skills" width="100%">
+</p>
 
 Agent skills for Cartesia developer products. These skills follow the Agent Skills specification.
 
