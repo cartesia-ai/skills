@@ -9,7 +9,7 @@ Build production voice agents with the Cartesia Line SDK. This guide covers agen
 
 ## How Line Works
 
-Line is Cartesia's voice agent platform. You write text-to-text agent logic with the Line SDK, and Cartesia handles everything else:
+Line is Cartesia's voice agent deployment platform. You write Python agent code using the Line SDK, deploy it to Cartesia's managed cloud via the `cartesia` CLI, and Cartesia hosts it with auto-scaling. Cartesia handles STT (Ink), TTS (Sonic), telephony, and audio orchestration. Only one deployment per agent is active at a time; once deployed, your agent receives calls automatically.
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
@@ -45,9 +45,58 @@ Line is Cartesia's voice agent platform. You write text-to-text agent logic with
 - [Cartesia Telephony](https://docs.cartesia.ai/build-with-line/integrations/telephony/phone-numbers) - Managed phone numbers
 - [Calls API](references/calls-api.md) - Web apps, mobile apps, custom telephony
 
+## Prerequisites
+
+- **Python 3.9+** and [uv](https://docs.astral.sh/uv/) (recommended package manager)
+- **Cartesia API key** — get one at [play.cartesia.ai/keys](https://play.cartesia.ai/keys) (used by the CLI and for deployment)
+- **LLM API key** — for whichever LLM provider your agent calls (e.g. `ANTHROPIC_API_KEY`, `OPENAI_API_KEY`, `GEMINI_API_KEY`)
+- **Cartesia CLI** — install with:
+  ```bash
+  curl -fsSL https://cartesia.sh | sh
+  ```
+
+## Cartesia CLI Reference
+
+```bash
+# Authentication
+cartesia auth login              # Login with Cartesia API key
+cartesia auth status             # Check auth status
+
+# Project Setup
+cartesia create [project-name]   # Create project from template
+cartesia init                    # Link existing directory to an agent
+
+# Local Development
+cartesia chat <port>             # Chat with local agent (text mode)
+
+# Deployment
+cartesia deploy                  # Deploy to Cartesia cloud
+cartesia status                  # Check deployment status
+
+# Environment Variables (encrypted, stored on Cartesia)
+cartesia env set KEY=VALUE       # Set a single env var
+cartesia env set --from .env     # Import all vars from .env file
+cartesia env rm <name>           # Remove an env var
+
+# Agents & Calls
+cartesia agents ls               # List all agents
+cartesia deployments ls          # List deployments
+cartesia call <phone> [agent-id] # Make outbound call
+```
+
 ## Quick Start
 
-Minimal working voice agent:
+### 1. Create Project
+
+```bash
+cartesia auth login
+cartesia create my-agent
+cd my-agent
+```
+
+### 2. Write Agent Code
+
+`main.py`:
 
 ```python
 import os
@@ -71,7 +120,28 @@ if __name__ == "__main__":
     app.run()
 ```
 
-Run with: `ANTHROPIC_API_KEY=your-key python main.py`
+### 3. Test Locally
+
+```bash
+ANTHROPIC_API_KEY=your-key python main.py
+cartesia chat 8000  # Text chat with your running agent
+```
+
+### 4. Deploy
+
+```bash
+cartesia env set ANTHROPIC_API_KEY=your-key  # Encrypted, stored on Cartesia
+cartesia deploy
+cartesia status  # Verify deployment is active
+```
+
+### 5. Make a Call
+
+```bash
+cartesia call +1234567890  # Outbound call via CLI
+```
+
+Or trigger calls from the [Cartesia dashboard](https://play.cartesia.ai).
 
 ## Project Structure
 
@@ -80,7 +150,7 @@ Run with: `ANTHROPIC_API_KEY=your-key python main.py`
 ```
 my_agent/
 ├── main.py          # VoiceAgentApp entry point (REQUIRED)
-├── cartesia.toml    # Cartesia deployment config (REQUIRED)
+├── cartesia.toml    # Deployment config, created by cartesia init or cartesia create (REQUIRED)
 └── pyproject.toml   # Dependencies: cartesia-line
 ```
 

@@ -8,6 +8,10 @@ Agent skills for Cartesia developer products. These skills follow the Agent Skil
 
 ### line-voice-agent
 
+```bash
+npx skills add cartesia-ai/skills
+```
+
 Build voice agents with the Cartesia Line SDK. Supports 100+ LLM providers via LiteLLM with tool calling, multi-agent handoffs, and real-time interruption handling.
 
 **Capabilities:**
@@ -19,18 +23,11 @@ Build voice agents with the Cartesia Line SDK. Supports 100+ LLM providers via L
 - Background tool execution for complex reasoning
 - Real-time interruption handling
 
-## Installation
-
-```bash
-npx skills add cartesia-ai/skills
-```
-
 ## Configuration
 
-Voice agents require a Cartesia API key and at least one LLM provider API key.
+Voice agents deployed to Cartesia require at least one LLM provider API key.
 
 ```bash
-export CARTESIA_API_KEY="your-cartesia-key"
 export ANTHROPIC_API_KEY="your-anthropic-key"  # or OPENAI_API_KEY, GEMINI_API_KEY, etc.
 ```
 
