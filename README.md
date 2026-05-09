@@ -4,6 +4,8 @@
 
 # Cartesia Agent Skills
 
+[![Install via skills.sh](https://img.shields.io/badge/skills.sh-install-green)](https://skills.sh/cartesia-ai/skills)
+
 **Agent Skills** are a first-class developer surface for [Cartesia](https://cartesia.ai/)—the same tier as our [documentation](https://docs.cartesia.ai), [SDKs](https://github.com/cartesia-ai/cartesia-python), and [MCP server](https://github.com/cartesia-ai/cartesia-mcp). Each skill is a versioned `SKILL.md` (plus optional `references/`) so **coding agents** integrate TTS, STT, voices, and **Cartesia Line** consistently, with correct **auth**, **`Cartesia-Version`**, and product boundaries.
 
 This repository follows the [Agent Skills](https://agentskills.io/home) convention. Layout is inspired by catalogs such as [google/skills](https://github.com/google/skills): skills live under `skills/<area>/<skill-name>/`.
