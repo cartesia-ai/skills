@@ -567,4 +567,4 @@ When implementing Line SDK agents, reference these example files:
 
 ## Related Cartesia skill
 
-For **direct HTTP/WebSocket integration** (TTS/STT/voices in your own backend, SDKs, optional MCP)—not Line deployment—use **[cartesia-api](../../developer/cartesia-api/SKILL.md)** in this repository.
+For **direct HTTP/WebSocket integration** (TTS/STT/voices in your own backend, SDKs, optional MCP)—not Line deployment—use **[cartesia-api](../api/SKILL.md)** in this repository.

@@ -6,7 +6,7 @@ compatibility: Requires a Cartesia API key from https://play.cartesia.ai/keys fo
 
 # Cartesia Voice & Speech APIs
 
-Cartesia provides **text-to-speech (Sonic)**, **speech-to-text (Ink)**, **voices** (library, clone, localize), and related **HTTPS** and **WebSocket** APIs. This skill covers **application integration** and **agent-assisted coding**. For **Cartesia Line** (managed voice agents, `cartesia` CLI, telephony, Line SDK), use **[line-voice-agent](../../line/line-voice-agent/SKILL.md)**.
+Cartesia provides **text-to-speech (Sonic)**, **speech-to-text (Ink)**, **voices** (library, clone, localize), and related **HTTPS** and **WebSocket** APIs. This skill covers **application integration** and **agent-assisted coding**. For **Cartesia Line** (managed voice agents, `cartesia` CLI, telephony, Line SDK), use **[line-voice-agent](../line/SKILL.md)**.
 
 ## Core directives
 
@@ -27,7 +27,7 @@ Cartesia provides **text-to-speech (Sonic)**, **speech-to-text (Ink)**, **voices
 |------|------|
 | App or backend calling REST/WebSocket | [Python SDK](https://github.com/cartesia-ai/cartesia-python), [JS/TS SDK](https://github.com/cartesia-ai/cartesia-js), or `curl` + OpenAPI |
 | IDE agent with MCP | `cartesia-mcp` + docs fallback |
-| Deployed voice agent, Line, telephony | **[line-voice-agent](../../line/line-voice-agent/SKILL.md)** |
+| Deployed voice agent, Line, telephony | **[line-voice-agent](../line/SKILL.md)** |
 | Quick curl-oriented capsule | `https://cartesia.sh/openclaw.md` (verify against docs for your version) |
 
 ## Quick start (HTTP TTS, one-shot)
@@ -61,7 +61,7 @@ curl -X POST "https://api.cartesia.ai/tts/bytes" \
 
 ## Related material in this repo
 
-- **Line voice agents:** [line-voice-agent](../../line/line-voice-agent/SKILL.md)
+- **Line voice agents:** [line-voice-agent](../line/SKILL.md)
 - **Link hub:** [references/resources.md](references/resources.md)
 
 ## Common mistakes

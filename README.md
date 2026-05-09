@@ -8,7 +8,7 @@
 
 **Agent Skills** are a first-class developer surface for [Cartesia](https://cartesia.ai/)—the same tier as our [documentation](https://docs.cartesia.ai), [SDKs](https://github.com/cartesia-ai/cartesia-python), and [MCP server](https://github.com/cartesia-ai/cartesia-mcp). Each skill is a versioned `SKILL.md` (plus optional `references/`) so **coding agents** integrate TTS, STT, voices, and **Cartesia Line** consistently, with correct **auth**, **`Cartesia-Version`**, and product boundaries.
 
-This repository follows the [Agent Skills](https://agentskills.io/home) convention. Each skill lives under `skills/<area>/<skill-name>/`.
+This repository follows the [Agent Skills](https://agentskills.io/home) convention. Product skills live under **`skills/api/`** (HTTP/WebSocket + client libraries) and **`skills/line/`** (Cartesia Line), each with a `SKILL.md` and optional `references/`. YAML `name` in frontmatter (`cartesia-api`, `line-voice-agent`) is what install tools use—not the folder name.
 
 ## Install
 
@@ -24,8 +24,8 @@ Select **cartesia-api** and/or **line-voice-agent** when prompted.
 
 | Skill | Path | Use when |
 |-------|------|----------|
-| **cartesia-api** | [`skills/developer/cartesia-api`](./skills/developer/cartesia-api) | **Application code**: REST/WebSocket, Sonic TTS, Ink STT, voices, SDKs, optional MCP. |
-| **line-voice-agent** | [`skills/line/line-voice-agent`](./skills/line/line-voice-agent) | **Cartesia Line**: CLI, `cartesia deploy`, `VoiceAgentApp`, telephony, multi-agent tools. |
+| **cartesia-api** | [`skills/api`](./skills/api) | **Application code**: REST/WebSocket, Sonic TTS, Ink STT, voices, SDKs, optional MCP. |
+| **line-voice-agent** | [`skills/line`](./skills/line) | **Cartesia Line**: CLI, `cartesia deploy`, `VoiceAgentApp`, telephony, multi-agent tools. |
 
 ## First-class surfaces (for LLMs and humans)
 

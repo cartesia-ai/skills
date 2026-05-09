@@ -12,14 +12,12 @@ Cartesia **Agent Skills** are a first-class way for coding agents (Cursor, Claud
 
 ```
 skills/
-  developer/
-    cartesia-api/          # REST/SDK/MCP integration
-      SKILL.md
-      references/
-  line/
-    line-voice-agent/      # Cartesia Line SDK, CLI, telephony
-      SKILL.md
-      references/
+  api/                     # REST/WebSocket + Python/JS client libraries (skill name: cartesia-api)
+    SKILL.md
+    references/
+  line/                    # Cartesia Line SDK, CLI, telephony (skill name: line-voice-agent)
+    SKILL.md
+    references/
 ```
 
 Install for users: `npx skills add cartesia-ai/skills`
@@ -29,6 +27,6 @@ Install for users: `npx skills add cartesia-ai/skills`
 1. Edit the relevant `SKILL.md` (YAML `name` + `description` drive discovery).
 2. Add deep dives under `references/` when the main file gets too long.
 3. Update the root **README.md** skill table if you add or rename a skill.
-4. Keep **cartesia-api** vs **line-voice-agent** boundaries clear: API integration vs deployed Line agents.
+4. Keep **cartesia-api** vs **line-voice-agent** boundaries clear: API + client libs vs deployed Line agents.
 
 Track larger releases with your team (e.g. Linear **Surfaces** / **Cartesia for AIs**).
