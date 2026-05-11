@@ -47,10 +47,12 @@ export ANTHROPIC_API_KEY="your-anthropic-key"  # or OPENAI_API_KEY, GEMINI_API_K
 
 Cartesia API keys: [play.cartesia.ai/keys](https://play.cartesia.ai/keys).
 
-## Contributing
+## Repository layout
 
-See [CONTRIBUTING.md](./CONTRIBUTING.md).
+```
+skills/
+  api/           # cartesia-api — HTTP/WebSocket, SDKs, optional MCP
+  line/          # line-voice-agent — Line SDK, CLI, telephony
+```
 
-## License
-
-See [LICENSE](./LICENSE).
+Each area has a `SKILL.md` and optional `references/`. Installers use YAML **`name`** in frontmatter (`cartesia-api`, `line-voice-agent`), not the folder name.

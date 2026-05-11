@@ -33,7 +33,3 @@
 | Spec | URL |
 |------|-----|
 | Agent Skills | https://agentskills.io/home |
-
-## Version header values (check OpenAPI for current enum)
-
-Documented `Cartesia-Version` dates include: `2024-06-10`, `2024-11-13`, `2025-04-16`, `2026-03-01`. New integrations should pick the latest documented date and test against it.
