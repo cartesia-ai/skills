@@ -8,7 +8,7 @@
 
 **Agent Skills** help coding agents ship Cartesia integrations the way we document them: **auth**, **`Cartesia-Version`**, and when to use Line vs raw APIs. Each skill is a versioned `SKILL.md` (plus optional `references/`). Contracts live on [docs.cartesia.ai](https://docs.cartesia.ai); use the [Python](https://github.com/cartesia-ai/cartesia-python) and [JS/TS](https://github.com/cartesia-ai/cartesia-js) SDKs in app code and optional [MCP](https://docs.cartesia.ai/tools/ai/mcp) in the IDE if you want it.
 
-This repository follows the [Agent Skills](https://agentskills.io/home) convention. Product skills live under **`skills/api/`** (HTTP/WebSocket + client libraries) and **`skills/line/`** (Cartesia Line), each with a `SKILL.md` and optional `references/`. YAML `name` in frontmatter (`cartesia-api`, `line-voice-agent`) is what install tools use—not the folder name.
+This repository follows the [Agent Skills](https://agentskills.io/home) convention. Product skills live under **`skills/api/`** (HTTP/WebSocket + client libraries) and **`skills/line/`** (Cartesia Line), each with a `SKILL.md` and optional `references/`.
 
 ## Install
 
@@ -51,8 +51,8 @@ Cartesia API keys: [play.cartesia.ai/keys](https://play.cartesia.ai/keys).
 
 ```
 skills/
-  api/           # cartesia-api — HTTP/WebSocket, SDKs, optional MCP
-  line/          # line-voice-agent — Line SDK, CLI, telephony
+  api/           # cartesia-api: HTTP/WebSocket, SDKs, optional MCP
+  line/          # line-voice-agent: Line SDK, CLI, telephony
 ```
 
-Each area has a `SKILL.md` and optional `references/`. Installers use YAML **`name`** in frontmatter (`cartesia-api`, `line-voice-agent`), not the folder name.
+Each area has a `SKILL.md` and optional `references/`. `npx skills add` matches the YAML **`name`** in that file (see table above), not the folder path.
