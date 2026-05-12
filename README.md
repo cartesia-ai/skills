@@ -6,7 +6,7 @@
 
 [![Install via skills.sh](https://img.shields.io/badge/skills.sh-install-green)](https://skills.sh/cartesia-ai/skills)
 
-**Agent Skills** are a first-class developer surface for [Cartesia](https://cartesia.ai/)—the same tier as our [documentation](https://docs.cartesia.ai), [SDKs](https://github.com/cartesia-ai/cartesia-python), and [MCP server](https://github.com/cartesia-ai/cartesia-mcp). Each skill is a versioned `SKILL.md` (plus optional `references/`) so **coding agents** integrate TTS, STT, voices, and **Cartesia Line** consistently, with correct **auth**, **`Cartesia-Version`**, and product boundaries.
+**Agent Skills** help coding agents ship Cartesia integrations the way we document them: **auth**, **`Cartesia-Version`**, and when to use Line vs raw APIs. Each skill is a versioned `SKILL.md` (plus optional `references/`). Contracts live on [docs.cartesia.ai](https://docs.cartesia.ai); use the [Python](https://github.com/cartesia-ai/cartesia-python) and [JS/TS](https://github.com/cartesia-ai/cartesia-js) SDKs in app code and optional [MCP](https://docs.cartesia.ai/tools/ai/mcp) in the IDE if you want it.
 
 This repository follows the [Agent Skills](https://agentskills.io/home) convention. Product skills live under **`skills/api/`** (HTTP/WebSocket + client libraries) and **`skills/line/`** (Cartesia Line), each with a `SKILL.md` and optional `references/`. YAML `name` in frontmatter (`cartesia-api`, `line-voice-agent`) is what install tools use—not the folder name.
 
@@ -27,11 +27,11 @@ Select **cartesia-api** and/or **line-voice-agent** when prompted.
 | **cartesia-api** | [`skills/api`](./skills/api) | **Application code**: REST/WebSocket, Sonic TTS, Ink STT, voices, SDKs, optional MCP. |
 | **line-voice-agent** | [`skills/line`](./skills/line) | **Cartesia Line**: CLI, `cartesia deploy`, `VoiceAgentApp`, telephony, multi-agent tools. |
 
-## First-class surfaces (for LLMs and humans)
+## Where to look (for LLMs and humans)
 
 | Surface | Role |
 |---------|------|
-| **This repo** | Curated agent instructions + cross-links; **source of truth** for skill wording. |
+| **This repo** | Curated `SKILL.md` copy and cross-links (docs + OpenAPI stay the contract). |
 | **[docs.cartesia.ai](https://docs.cartesia.ai)** | Full API reference, guides, OpenAPI/AsyncAPI. |
 | **[llms.txt](https://docs.cartesia.ai/llms.txt)** / **[llms-full.txt](https://docs.cartesia.ai/llms-full.txt)** | Machine-readable doc indexes for RAG and fetches. |
 | **SDKs** | [Python](https://github.com/cartesia-ai/cartesia-python), [JS/TS](https://github.com/cartesia-ai/cartesia-js) for production integrations. |

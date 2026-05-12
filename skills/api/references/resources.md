@@ -12,7 +12,8 @@
 | Agent skills (install) | https://docs.cartesia.ai/tools/ai/agent-skills |
 | MCP | https://docs.cartesia.ai/tools/ai/mcp |
 | Playground / API keys | https://play.cartesia.ai/keys |
-| Access tokens (client-safe) | https://docs.cartesia.ai/api-reference/auth/access-token |
+| Access tokens (client-safe) | https://docs.cartesia.ai/api-reference/auth/access-token.md |
+| List voices | https://docs.cartesia.ai/api-reference/voices/list.md |
 
 ## SDKs (first choice for app code)
 
