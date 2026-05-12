@@ -28,7 +28,7 @@ Cartesia provides **text-to-speech (Sonic)**, **speech-to-text (Ink)**, **voices
 | App or backend calling REST/WebSocket | [Python SDK](https://github.com/cartesia-ai/cartesia-python), [JS/TS SDK](https://github.com/cartesia-ai/cartesia-js), or `curl` + OpenAPI |
 | IDE agent with MCP | `cartesia-mcp` + docs fallback |
 | Deployed voice agent, Line, telephony | **[line-voice-agent](../line/SKILL.md)** |
-| Quick curl-oriented capsule | `https://cartesia.sh/openclaw.md` (verify against docs for your version) |
+| OpenClaw bootstrap (URLs only; not SOT) | `https://cartesia.sh/openclaw.md` then docs / `llms.txt` |
 
 ## Quick start (HTTP TTS, one-shot)
 
