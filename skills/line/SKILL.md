@@ -564,3 +564,7 @@ When implementing Line SDK agents, reference these example files:
 - `examples/chat_supervisor/main.py` - Background tools with two-tier model strategy
 - `examples/transfer_agent/main.py` - Multi-agent handoffs
 - `examples/echo/tools.py` - Custom handoff tools
+
+## Related Cartesia skill
+
+For **direct HTTP/WebSocket integration** (TTS/STT/voices in your own backend, SDKs, optional MCP)—not Line deployment—use **[cartesia-api](../api/SKILL.md)** in this repository.
