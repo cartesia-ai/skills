@@ -29,7 +29,7 @@
 | Tool | URL |
 |------|-----|
 | MCP server | https://github.com/cartesia-ai/cartesia-mcp |
-| Short curl capsule | https://cartesia.sh/openclaw.md |
+| OpenClaw bootstrap | https://cartesia.sh/openclaw.md |
 
 ## Agent Skills spec
 
