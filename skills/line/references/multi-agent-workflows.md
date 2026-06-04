@@ -157,7 +157,7 @@ class GuardrailsWrapper:
 async def get_agent(env: AgentEnv, call_request: CallRequest):
     # Create the inner agent
     inner_agent = LlmAgent(
-        model="anthropic/claude-sonnet-4-20250514",
+        model="anthropic/claude-sonnet-4-5",
         api_key=os.getenv("ANTHROPIC_API_KEY"),
         tools=[end_call, web_search],
         config=LlmConfig(

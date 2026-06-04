@@ -79,8 +79,8 @@ litellm.exceptions.BadRequestError: Unknown model: my-model
 
 ```python
 # Provider prefixes
-"gpt-4o"                                   # OpenAI (no prefix)
-"anthropic/claude-sonnet-4-20250514"       # Anthropic
+"gpt-5.2"                                   # OpenAI (no prefix)
+"anthropic/claude-sonnet-4-5"               # Anthropic
 "gemini/gemini-2.5-flash-preview-09-2025"  # Google
 "azure/my-deployment"                       # Azure OpenAI
 
@@ -118,10 +118,11 @@ LlmAgent(
 Some models don't support native web search. Line SDK auto-detects and falls back to DuckDuckGo:
 
 ```
-INFO: Model gpt-4o doesn't support native web search, using fallback tool
+INFO: Model doesn't support native web search, using fallback tool
 ```
 
-For the fallback, install: `pip install duckduckgo-search`
+The DuckDuckGo fallback uses the `ddgs` package, which ships with `cartesia-line`.
+If you see an import error, install it with: `pip install ddgs`
 
 ## DTMF Issues
 
