@@ -47,7 +47,7 @@ Line is Cartesia's voice agent deployment platform. You write Python agent code 
 
 ## Prerequisites
 
-- **Python 3.9+** and [uv](https://docs.astral.sh/uv/) (recommended package manager)
+- **Python 3.10+** and [uv](https://docs.astral.sh/uv/) (recommended package manager)
 - **Cartesia API key** — get one at [play.cartesia.ai/keys](https://play.cartesia.ai/keys) (used by the CLI and for deployment)
 - **LLM API key** — for whichever LLM provider your agent calls (e.g. `ANTHROPIC_API_KEY`, `OPENAI_API_KEY`, `GEMINI_API_KEY`)
 - **Cartesia CLI** — install with:
@@ -83,6 +83,8 @@ cartesia agents ls               # List all agents
 cartesia deployments ls          # List deployments
 cartesia call <phone> [agent-id] # Make outbound call
 ```
+
+Full command reference: [docs.cartesia.ai/line/cli](https://docs.cartesia.ai/line/cli).
 
 ## Quick Start
 
@@ -154,6 +156,23 @@ my_agent/
 └── pyproject.toml   # Dependencies: cartesia-line
 ```
 
+`cartesia.toml` declares deployment metadata, the local server address, and the
+env vars your agent requires:
+
+```toml
+[cartesia]
+name = "My Agent"
+description = "What this agent does"
+version = "0.1.0"
+
+[cartesia.server]
+port = 8000
+host = "0.0.0.0"
+
+[cartesia.environment]
+required_vars = ["ANTHROPIC_API_KEY"]
+```
+
 ## Core Concepts
 
 ### LlmAgent
@@ -169,6 +188,7 @@ agent = LlmAgent(
     tools=[end_call, my_custom_tool],                  # List of tools
     config=LlmConfig(...),                             # Agent configuration
     max_tool_iterations=10,                            # Max tool call loops (default: 10)
+    backend=None,                                      # Optional provider backend override
 )
 ```
 
@@ -188,13 +208,27 @@ config = LlmConfig(
     temperature=0.7,
     max_tokens=1024,
     top_p=0.9,
+    stop=["\n\n"],
+    seed=42,
+    presence_penalty=0.0,
+    frequency_penalty=0.0,
+    # Reasoning models only: "none" | "minimal" | "low" | "medium" | "high"
+    reasoning_effort="low",
 
     # Resilience (optional)
-    num_retries=2,
+    num_retries=2,           # Default: 2
     timeout=30.0,
-    fallbacks=["gpt-4o-mini"],  # Fallback models
+    fallbacks=["gpt-5-nano"],  # Fallback models
+
+    # Advanced (optional)
+    strict_tool_schemas=True,   # Default: True
+    extra={},                   # Provider-specific pass-through kwargs to LiteLLM
 )
 ```
+
+> `reasoning_effort` is validated against the model: passing it to a model that
+> doesn't support reasoning raises `ValueError`. Use `"none"` (or omit it) for
+> non-reasoning models.
 
 ### Dynamic Configuration from CallRequest
 
@@ -203,7 +237,7 @@ Use `LlmConfig.from_call_request()` to pull configuration from the incoming call
 ```python
 async def get_agent(env: AgentEnv, call_request: CallRequest):
     return LlmAgent(
-        model="anthropic/claude-sonnet-4-20250514",
+        model="anthropic/claude-sonnet-4-5",
         api_key=os.getenv("ANTHROPIC_API_KEY"),
         tools=[end_call],
         config=LlmConfig.from_call_request(
@@ -241,7 +275,10 @@ app.run(host="0.0.0.0", port=8000)
 Import from `line.llm_agent`:
 
 ```python
-from line.llm_agent import end_call, send_dtmf, transfer_call, web_search
+from line.llm_agent import (
+    end_call, send_dtmf, transfer_call, web_search,
+    knowledge_base, mcp_tool, http_server_tool,
+)
 ```
 
 ### end_call
@@ -282,6 +319,79 @@ tools=[web_search]
 # Custom settings
 tools=[web_search(search_context_size="high")]  # "low", "medium", "high"
 ```
+
+### knowledge_base
+
+Look up information from the agent's knowledge base via a natural-language query.
+Filters, `top_k`, and `timeout_s` are fixed at construction time — the LLM only
+chooses the query string.
+
+```python
+# Default behavior — no filters
+tools=[knowledge_base]
+
+# Pre-filter every retrieval, override top_k, or run as a background lookup
+tools=[knowledge_base(filters={"category": "billing"}, top_k=10)]
+tools=[knowledge_base(description="Look up insurance policy terms.")]
+tools=[knowledge_base(is_background=True)]
+```
+
+Tell the user you're looking something up before calling it — retrieval can take
+a moment. Raises `KnowledgeBaseError` (import from `line`) on failure.
+
+### mcp_tool
+
+Expose a [Model Context Protocol](https://docs.cartesia.ai/tools/ai/mcp.md) server
+to the LLM. Requires Python 3.10+ and the `mcp` package (already a Line dependency).
+
+```python
+# Remote HTTP/SSE server
+tools=[mcp_tool(name="dmcp", server_url="https://dmcp-server.deno.dev/sse")]
+
+# Local stdio server
+tools=[mcp_tool(name="memory", command="npx -y @modelcontextprotocol/server-memory")]
+```
+
+The LLM calls the tool with no arguments to list available tools, or with
+`tool_name` and `tool_args` to invoke one.
+
+### http_server_tool
+
+Create an HTTP/webhook tool from JSON schemas — no custom function needed. The LLM
+fills in the schema fields and the SDK makes the request. Properties with
+`constant_value` are hidden from the LLM and injected into every request;
+`${ENV_VAR}` placeholders in `auth` are resolved from `os.environ` at build time.
+
+```python
+create_ticket = http_server_tool(
+    name="create_ticket",
+    description="Creates a support ticket for the caller.",
+    url="https://api.example.com/v1/{tenant_id}/tickets",  # {param} = path variable
+    method="POST",
+    request_body_schema={
+        "type": "object",
+        "required": ["subject", "priority"],
+        "properties": {
+            "subject": {"type": "string", "description": "Short summary."},
+            "priority": {"type": "string", "enum": ["low", "medium", "high"]},
+            "source": {"type": "string", "constant_value": "voice_agent"},  # hidden
+        },
+    },
+    query_params_schema=None,   # same shape, scalar types only, for GET query params
+    auth={"Authorization": "Bearer ${SUPPORT_API_KEY}"},
+    content_type="application/json",  # or "application/x-www-form-urlencoded"
+    timeout=5.0,
+    is_background=True,  # default True
+)
+
+tools=[create_ticket, end_call]
+```
+
+The LLM always receives a structured JSON result, e.g.
+`{"ok": true, "status": 201, "body": "..."}` or `{"ok": false, "status": 500, "error": "..."}`.
+
+> Note: some Line docs/READMEs refer to this as `webhook_tool`; the exported
+> function name is `http_server_tool`.
 
 ## Custom Tool Types
 
@@ -369,16 +479,41 @@ async def transfer_to_support(
 
 Transfer control to another agent. See [Multi-Agent Workflows](references/multi-agent-workflows.md).
 
+## Context Management
+
+`LlmAgent` exposes a `history` object for injecting and transforming the
+conversation history the LLM sees.
+
+```python
+agent = LlmAgent(model="gemini/gemini-2.5-flash-preview-09-2025", api_key=...)
+
+# Inject a custom entry (defaults to role="user"; pass role="system" for a system note)
+agent.history.add_entry("The customer's name is Alice and she has a premium account.")
+
+# Anchor an insertion relative to an existing event
+agent.history.add_entry("Reminder: stay concise.", role="system", after=some_event)
+
+# Replace a segment of history with new events (filtering, summarization, etc.)
+agent.history.update(new_events, start=first_event, end=last_event)
+```
+
+Entries are inserted lazily and survive across turns. Inside a tool you can call
+`agent.history.add_entry(...)` to persist rich context fetched from an external API.
+
+> Note: some Line READMEs show `agent.add_history_entry(...)` /
+> `agent.set_history_processor(...)`. The implemented API is `agent.history.add_entry(...)`
+> and `agent.history.update(...)`.
+
 ## Model Selection Strategy
 
 **Use FAST models for the main conversational agent:**
 - `gemini/gemini-2.5-flash-preview-09-2025` (recommended)
 - `anthropic/claude-haiku-4-5-20251001`
-- `gpt-4o-mini`
+- `gpt-5-nano`
 
 **Use POWERFUL models only via background tool calls** for complex reasoning:
 - `anthropic/claude-opus-4-5`
-- `gpt-4o`
+- `gpt-5.2`
 
 This pattern keeps conversations responsive while accessing deep reasoning when needed. See the Two-Tier Agent Pattern in [Advanced Patterns](references/advanced-patterns.md) for implementation.
 
@@ -388,10 +523,10 @@ Line SDK uses LiteLLM model strings. Common formats:
 
 | Provider | Format | Example |
 |----------|--------|---------|
-| OpenAI | `model_name` | `gpt-4o`, `gpt-4o-mini` |
-| Anthropic | `anthropic/model_name` | `anthropic/claude-sonnet-4-20250514` |
+| OpenAI | `model_name` | `gpt-5.2`, `gpt-5-nano` |
+| Anthropic | `anthropic/model_name` | `anthropic/claude-sonnet-4-5`, `anthropic/claude-haiku-4-5-20251001` |
 | Google Gemini | `gemini/model_name` | `gemini/gemini-2.5-flash-preview-09-2025` |
-| Azure OpenAI | `azure/deployment_name` | `azure/my-gpt4-deployment` |
+| Azure OpenAI | `azure/deployment_name` | `azure/my-deployment` |
 
 Set the appropriate API key environment variable:
 - `OPENAI_API_KEY`
@@ -521,11 +656,19 @@ async def record_answer(
 
 ## Reference Documentation
 
+In this skill:
 - [Tool Patterns](references/tool-patterns.md) - Deep dive on tool implementation
 - [Multi-Agent Workflows](references/multi-agent-workflows.md) - Handoffs, wrappers, guardrails
 - [Advanced Patterns](references/advanced-patterns.md) - Background tools, state, events
 - [Calls API](references/calls-api.md) - WebSocket integration for web/mobile apps
 - [Troubleshooting](references/troubleshooting.md) - Common issues and debugging
+
+On [docs.cartesia.ai](https://docs.cartesia.ai/line/introduction):
+- [SDK Overview](https://docs.cartesia.ai/line/sdk/overview) — architecture and installation
+- [Tools Guide](https://docs.cartesia.ai/line/sdk/tools) — tool types in depth
+- [Agents Guide](https://docs.cartesia.ai/line/sdk/agents) — LlmAgent, custom agents, conversation loop
+- [Events Reference](https://docs.cartesia.ai/line/sdk/events) — input/output events
+- [CLI Reference](https://docs.cartesia.ai/line/cli) — deploy, env, agents, calls
 
 ## Key Imports
 
@@ -535,7 +678,10 @@ from line.llm_agent import LlmAgent, LlmConfig
 from line.voice_agent_app import VoiceAgentApp, AgentEnv, CallRequest
 
 # Built-in tools
-from line.llm_agent import end_call, send_dtmf, transfer_call, web_search
+from line.llm_agent import (
+    end_call, send_dtmf, transfer_call, web_search,
+    knowledge_base, mcp_tool, http_server_tool,
+)
 
 # Tool decorators
 from line.llm_agent import loopback_tool, passthrough_tool, handoff_tool
@@ -546,6 +692,9 @@ from line.llm_agent import ToolEnv
 # Multi-agent
 from line.llm_agent import agent_as_handoff
 
+# Knowledge base (errors / client)
+from line import KnowledgeBase, KnowledgeBaseError
+
 # Events (for passthrough/handoff tools and custom agents)
 from line.events import (
     AgentSendText,
@@ -553,17 +702,25 @@ from line.events import (
     AgentTransferCall,
     AgentSendDtmf,
     AgentUpdateCall,
+    AgentSendCustom,
+    CustomHistoryEntry,
+    HistoryEvent,
 )
 ```
 
 ## Key Reference Files
 
-When implementing Line SDK agents, reference these example files:
-- `examples/basic_chat/main.py` - Simplest agent pattern
+When implementing Line SDK agents, reference these example files in the
+[`cartesia-ai/line`](https://github.com/cartesia-ai/line) repo:
+- `examples/basic_chat/main.py` - Simplest agent pattern (web_search)
 - `examples/form_filler/` - Loopback tools with state
 - `examples/chat_supervisor/main.py` - Background tools with two-tier model strategy
 - `examples/transfer_agent/main.py` - Multi-agent handoffs
+- `examples/transfer_phone_call/main.py` - IVR navigation & phone transfers
+- `examples/guardrails_wrapper/` - Wrapping an agent with guardrails
+- `examples/sales_with_leads/` - Stateful lead extraction + research
 - `examples/echo/tools.py` - Custom handoff tools
+- `example_integrations/` - Exa, Tavily, Cerebras, Browserbase integrations
 
 ## Related Cartesia skill
 
