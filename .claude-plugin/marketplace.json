@@ -1,0 +1,15 @@
+{
+  "name": "cartesia",
+  "owner": {
+    "name": "Cartesia"
+  },
+  "plugins": [
+    {
+      "name": "cartesia-skills",
+      "source": "./",
+      "description": "How to build with Cartesia's models and Line voice agents",
+      "category": "sdk",
+      "keywords": ["cartesia", "tts", "stt", "text-to-speech", "speech-to-text", "asr", "automatic-speech-recognition", "transcription", "realtime", "voice", "speech", "line", "agents", "voice-agents"]
+    }
+  ]
+}
