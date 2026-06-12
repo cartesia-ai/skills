@@ -1,0 +1,13 @@
+{
+  "name": "cartesia-skills",
+  "displayName": "Cartesia Skills",
+  "description": "Agent Skills for building with Cartesia: speech + transcription APIs (Sonic + Ink) and Line voice agents.",
+  "author": {
+    "name": "Cartesia",
+    "url": "https://cartesia.ai"
+  },
+  "homepage": "https://docs.cartesia.ai/tools/ai/agent-skills",
+  "repository": "https://github.com/cartesia-ai/skills",
+  "license": "MIT",
+  "keywords": ["cartesia", "tts", "stt", "text-to-speech", "speech-to-text", "asr", "automatic-speech-recognition", "transcription", "realtime", "voice", "speech", "line", "agents", "voice-agents"]
+}

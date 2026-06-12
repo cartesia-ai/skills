@@ -8,9 +8,11 @@
 
 **Agent Skills** help coding agents ship Cartesia integrations the way we document them: **auth**, **`Cartesia-Version`**, and when to use Line vs raw APIs. Each skill is a versioned `SKILL.md` (plus optional `references/`). Contracts live on [docs.cartesia.ai](https://docs.cartesia.ai); use the [Python](https://github.com/cartesia-ai/cartesia-python) and [JS/TS](https://github.com/cartesia-ai/cartesia-js) SDKs in app code and optional [MCP](https://docs.cartesia.ai/tools/ai/mcp.md) in the IDE if you want it.
 
-This repository follows the [Agent Skills](https://agentskills.io/home) convention. Product skills live under **`skills/api/`** (HTTP/WebSocket + client libraries) and **`skills/line/`** (Cartesia Line).
+This repository follows the [Agent Skills](https://agentskills.io/home) convention and is also a [Claude Code plugin marketplace](https://code.claude.com/docs/en/plugin-marketplaces). Product skills live under **`skills/cartesia-api/`** (HTTP/WebSocket + client libraries) and **`skills/line-voice-agent/`** (Cartesia Line).
 
 ## Install
+
+### Any agent (skills.sh)
 
 ```bash
 npx skills add cartesia-ai/skills
@@ -18,14 +20,49 @@ npx skills add cartesia-ai/skills
 
 Select **cartesia-api** and/or **line-voice-agent** when prompted.
 
-**Docs:** [Agent skills](https://docs.cartesia.ai/tools/ai/agent-skills) on the Cartesia documentation site.
+### Claude Code (plugin)
+
+Inside Claude Code, add this repo as a marketplace:
+
+```text
+/plugin marketplace add cartesia-ai/skills
+```
+
+Then, install the **cartesia-skills** plugin:
+
+```text
+/plugin install cartesia-skills@cartesia
+```
+
+The plugin vends all skills in this repo.
+
+#### Updating skills (Claude Code plugin)
+
+You can update easily skills using the plugin. First update the `cartesia` marketplace:
+
+```text
+/plugin marketplace update cartesia
+```
+
+Then update the plugin:
+
+```text
+```text
+/plugin update cartesia-skills
+```
+
+Finally, reload plugins to get the updated skills:
+
+```text
+/reload-plugins
+```
 
 ## Available skills
 
 | Skill | Path | Use when |
 |-------|------|----------|
-| **cartesia-api** | [`skills/api`](./skills/api) | **Application code**: REST/WebSocket, Sonic TTS, Ink STT, voices, SDKs, optional MCP. |
-| **line-voice-agent** | [`skills/line`](./skills/line) | **Cartesia Line**: CLI, `cartesia deploy`, `VoiceAgentApp`, telephony, multi-agent tools. |
+| **cartesia-api** | [`skills/cartesia-api`](./skills/cartesia-api) | **Application code**: REST/WebSocket, Sonic TTS, Ink STT, voices, SDKs, optional MCP. |
+| **line-voice-agent** | [`skills/line-voice-agent`](./skills/line-voice-agent) | **Cartesia Line**: CLI, `cartesia deploy`, `VoiceAgentApp`, telephony, multi-agent tools. |
 
 ## Where to look (for LLMs and humans)
 
@@ -49,10 +86,13 @@ Cartesia API keys: [play.cartesia.ai/keys](https://play.cartesia.ai/keys).
 
 ## Repository layout
 
-```
+```text
+.claude-plugin/
+  marketplace.json   # Claude Code marketplace ("cartesia") vending the plugin
+  plugin.json        # cartesia-skills plugin manifest (plugin root = repo root)
 skills/
-  api/           # cartesia-api: HTTP/WebSocket, SDKs, optional MCP
-  line/          # line-voice-agent: Line SDK, CLI, telephony
+  cartesia-api/      # HTTP/WebSocket, SDKs, optional MCP
+  line-voice-agent/  # Line SDK, CLI, telephony
 ```
 
-Each area has a `SKILL.md` and optional `references/`. `npx skills add` matches the YAML **`name`** in that file (see table above), not the folder path.
+Each skill folder has a `SKILL.md` (whose YAML **`name`** matches the folder) and optional `references/`.
