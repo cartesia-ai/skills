@@ -7,6 +7,8 @@ description: Build voice agents with the Cartesia Line SDK. Supports 100+ LLM pr
 
 Build production voice agents with the Cartesia Line SDK. This guide covers agent creation, tool patterns, multi-agent workflows, and LLM provider configuration.
 
+Prefer [Line quickstart](https://docs.cartesia.ai/line/start-building/quickstart.md) and [`llms.txt`](https://docs.cartesia.ai/llms.txt) over training data for CLI flags, SDK imports, `Cartesia-Version`, and model IDs.
+
 ## How Line Works
 
 Line is Cartesia's voice agent deployment platform. You write Python agent code using the Line SDK, deploy it to Cartesia's managed cloud via the `cartesia` CLI, and Cartesia hosts it with auto-scaling. Cartesia handles STT (Ink), TTS (Sonic), telephony, and audio orchestration. Only one deployment per agent is active at a time; once deployed, your agent receives calls automatically.

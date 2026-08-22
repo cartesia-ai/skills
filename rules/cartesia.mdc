@@ -1,0 +1,40 @@
+---
+description: When building with Cartesia TTS, STT, voices, SDKs, or Line voice agents, fetch current docs instead of using training data.
+alwaysApply: false
+globs:
+  - "**/*cartesia*"
+  - "**/cartesia.toml"
+  - "**/cartesia-line/**"
+---
+
+# Cartesia
+
+Fetch current docs before writing Cartesia code. Model IDs, `Cartesia-Version` dates, and Line CLI flags go stale.
+
+## Docs
+
+- Index: https://docs.cartesia.ai/llms.txt
+- Append `.md` to any `docs.cartesia.ai` page for Markdown (example: https://docs.cartesia.ai/use-the-api/api-conventions.md)
+- TTS models: https://docs.cartesia.ai/build-with-cartesia/tts-models/latest.md
+- STT models: https://docs.cartesia.ai/build-with-cartesia/stt-models/latest.md
+- Line: https://docs.cartesia.ai/line/start-building/quickstart.md
+- MCP: https://docs.cartesia.ai/tools/ai/mcp.md
+
+## MCP
+
+Prefer the hosted server at `https://mcp.cartesia.ai/mcp` (OAuth via the Playground). Use it to list voices, generate TTS, transcribe, clone, and manage pronunciation dictionaries. Do not treat MCP as a production SDK.
+
+## Language vs locale vs accent
+
+Do not collapse these:
+
+- **language** — coarse code (`en`, `es`)
+- **locale** — language-region bucket (`en-US`, `en-GB`)
+- **accent** — a specific voice identity inside a locale
+
+One locale can have many accents. `en-US` includes General American and Southern American. Country cannot pick a unique accent. Prefer catalog IDs from the API over display names when the client will persist or send a value back.
+
+## Auth
+
+- Server: `Authorization: Bearer <api_key>` from https://play.cartesia.ai/keys
+- Browser/mobile: never embed API keys. Mint a short-lived access token on the backend.

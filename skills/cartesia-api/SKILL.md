@@ -1,7 +1,7 @@
 ---
 name: cartesia-api
 description: Integrate Cartesia speech APIs (TTS, STT, voices) in application code or coding-agent workflows. Use when the user asks about Cartesia REST/WebSocket APIs, SDKs, API keys, Sonic TTS, Ink STT, voice IDs, access tokens, or embedding voice in an app. For Cartesia Line deployed agents, CLI deploy, and telephony, use the line-voice-agent skill instead.
-compatibility: Requires a Cartesia API key from https://play.cartesia.ai/keys for server-side calls. Client apps must use short-lived access tokens, not raw API keys. Optional cartesia-mcp requires Python 3.13+.
+compatibility: Requires a Cartesia API key from https://play.cartesia.ai/keys for server-side calls. Client apps must use short-lived access tokens, not raw API keys. Optional hosted MCP is https://mcp.cartesia.ai/mcp (OAuth via the Playground). Local uvx cartesia-mcp is for development.
 ---
 
 # Cartesia Voice & Speech APIs
@@ -27,10 +27,9 @@ Cartesia provides **text-to-speech (Sonic)**, **speech-to-text (Ink)**, **voices
 - **Source of truth:** Prefer [docs](https://docs.cartesia.ai) since they are updated first before SDKs / plugins / integrations
   - **Fetch docs as Markdown:** append `.md` to any `docs.cartesia.ai` page to get the agent-readable Markdown (e.g. `https://docs.cartesia.ai/api-reference/stt/transcribe.md`); the bare URL is the human HTML page. Prefer the `.md` form when fetching docs programmatically
   - For machine index: [`llms.txt`](https://docs.cartesia.ai/llms.txt) and [`llms-full.txt`](https://docs.cartesia.ai/llms-full.txt)
-- **Optional MCP:** [cartesia-mcp](https://github.com/cartesia-ai/cartesia-mcp) helps in **Cursor / Claude** (files, voice tools)
-  - MCP does NOT replace API / SDKs for production
-  - Requires **Python 3.13+**
-  - See [MCP docs](https://docs.cartesia.ai/tools/ai/mcp.md)
+- **Optional MCP:** hosted server `https://mcp.cartesia.ai/mcp` (OAuth via the Playground) lists voices, runs TTS/STT, clones, and manages pronunciation dictionaries in Cursor / Claude
+  - MCP does **not** replace API / SDKs for production
+  - Local stdio (`uvx cartesia-mcp`) is for development; see [MCP docs](https://docs.cartesia.ai/tools/ai/mcp.md)
 
 ### Text-to-speech with Sonic (generating audio)
 
@@ -78,7 +77,7 @@ Replace `/heads/main/` with `/tags/vX.X.X/` (e.g. `/tags/v3.2.0/`) to source cod
 | Goal                                  | Path                                                                                                                                                  |
 | ------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
 | App or backend calling REST/WebSocket | [Python SDK](https://github.com/cartesia-ai/cartesia-python), [JS/TS SDK](https://github.com/cartesia-ai/cartesia-js), or native API requests / fetch |
-| IDE agent with MCP                    | `cartesia-mcp` + docs fallback                                                                                                                        |
+| IDE agent with MCP                    | Hosted `https://mcp.cartesia.ai/mcp` + docs fallback                                                                                                  |
 | Deployed voice agent, Line, telephony | **[line-voice-agent](../line-voice-agent/SKILL.md)**                                                                                                              |
 | OpenClaw bootstrap                    | `https://cartesia.sh/openclaw.md` then docs / `llms.txt`                                                                                              |
 
@@ -107,10 +106,20 @@ curl -X POST "https://api.cartesia.ai/tts/bytes" \
 
 ## Mental model (for LLMs)
 
-- **Sonic** = TTS Model used to generate speech
-- **Ink** = STT Model used to transcribe audio
+- **Sonic** = TTS model used to generate speech
+- **Ink** = STT model used to transcribe audio
 - **Line** = separate product: you deploy **your** Python agent; Cartesia runs STT/TTS/telephony around it, different from "call TTS API from my server."
 - **Concurrency / quota:** Handle `429`-class and structured `concurrency_limited` / `quota_exceeded` per [API errors](https://docs.cartesia.ai/use-the-api/api-errors.md).
+
+## Language vs locale vs accent
+
+Do not collapse these:
+
+- **language** — coarse code (`en`, `es`)
+- **locale** — language-region bucket (`en-US`, `en-GB`)
+- **accent** — a specific voice identity inside a locale
+
+One locale can have many accents. `en-US` includes General American and Southern American. Country cannot pick a unique accent. Prefer catalog IDs from the API over display names when the client will persist or send a value back.
 
 ## Related material in this repo
 
