@@ -1,7 +1,7 @@
 ---
 name: cartesia-api
 description: Integrate Cartesia speech APIs (TTS, STT, voices) in application code or coding-agent workflows. Use when the user asks about Cartesia REST/WebSocket APIs, SDKs, API keys, Sonic TTS, Ink STT, voice IDs, access tokens, or embedding voice in an app. For Cartesia Line deployed agents, CLI deploy, and telephony, use the line-voice-agent skill instead.
-compatibility: Requires a Cartesia API key from https://play.cartesia.ai/keys for server-side calls. Client apps must use short-lived access tokens, not raw API keys. Optional cartesia-mcp requires Python 3.13+.
+compatibility: Requires a Cartesia API key from https://play.cartesia.ai/keys for server-side calls. Client apps must use short-lived access tokens, not raw API keys. Optional hosted MCP is https://mcp.cartesia.ai/mcp (OAuth via the Playground). Local uvx cartesia-mcp is for development.
 ---
 
 # Cartesia Voice & Speech APIs

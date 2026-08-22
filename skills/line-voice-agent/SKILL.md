@@ -5,9 +5,9 @@ description: Build voice agents with the Cartesia Line SDK. Supports 100+ LLM pr
 
 # Line SDK Voice Agent Guide
 
-**STOP.** Line CLI flags, SDK imports, and `Cartesia-Version` dates go stale. Fetch [Line quickstart](https://docs.cartesia.ai/line/start-building/quickstart.md) and [`llms.txt`](https://docs.cartesia.ai/llms.txt) before scaffolding. Do not invent model IDs from memory.
-
 Build production voice agents with the Cartesia Line SDK. This guide covers agent creation, tool patterns, multi-agent workflows, and LLM provider configuration.
+
+Prefer [Line quickstart](https://docs.cartesia.ai/line/start-building/quickstart.md) and [`llms.txt`](https://docs.cartesia.ai/llms.txt) over training data for CLI flags, SDK imports, `Cartesia-Version`, and model IDs.
 
 ## How Line Works
 

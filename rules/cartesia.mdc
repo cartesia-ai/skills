@@ -3,14 +3,13 @@ description: When building with Cartesia TTS, STT, voices, SDKs, or Line voice a
 alwaysApply: false
 globs:
   - "**/*cartesia*"
-  - "**/line/**"
   - "**/cartesia.toml"
   - "**/cartesia-line/**"
 ---
 
 # Cartesia
 
-STOP. Model IDs, `Cartesia-Version` dates, and Line CLI flags go stale. Fetch current docs before writing Cartesia code.
+Fetch current docs before writing Cartesia code. Model IDs, `Cartesia-Version` dates, and Line CLI flags go stale.
 
 ## Docs
 
