@@ -8,7 +8,7 @@
 
 **Agent Skills** help coding agents ship Cartesia integrations the way we document them: **auth**, **`Cartesia-Version`**, and when to use Line vs raw APIs. Each skill is a versioned `SKILL.md` (plus optional `references/`). Contracts live on [docs.cartesia.ai](https://docs.cartesia.ai); use the [Python](https://github.com/cartesia-ai/cartesia-python) and [JS/TS](https://github.com/cartesia-ai/cartesia-js) SDKs in app code and optional [MCP](https://docs.cartesia.ai/tools/ai/mcp.md) in the IDE if you want it.
 
-This repository follows the [Agent Skills](https://agentskills.io/home) convention and is also a [Claude Code plugin marketplace](https://code.claude.com/docs/en/plugin-marketplaces). Product skills live under **`skills/cartesia-api/`** (HTTP/WebSocket + client libraries) and **`skills/line-voice-agent/`** (Cartesia Line).
+This repository follows the [Agent Skills](https://agentskills.io/home) convention. It is a [Claude Code plugin marketplace](https://code.claude.com/docs/en/plugin-marketplaces) and a Cursor plugin (`name: cartesia`). Product skills live under **`skills/cartesia-api/`** (HTTP/WebSocket + client libraries) and **`skills/line-voice-agent/`** (Cartesia Line).
 
 ## Install
 
@@ -36,9 +36,27 @@ Then, install the **cartesia-skills** plugin:
 
 The plugin vends all skills in this repo.
 
-#### Updating skills (Claude Code plugin)
+### Cursor (plugin)
 
-You can update easily skills using the plugin. First update the `cartesia` marketplace:
+In Cursor chat:
+
+```text
+/add-plugin cartesia
+```
+
+Or install from the [Cursor Marketplace](https://cursor.com/marketplace) (after listing). The plugin registers hosted MCP at `https://mcp.cartesia.ai/mcp` (sign in via the Playground) and loads the skills, rule, and `/build-voice-agent` command in this repo.
+
+Local test before the marketplace listing:
+
+```bash
+ln -s /path/to/skills ~/.cursor/plugins/local/cartesia
+```
+
+Then reload the Cursor window. Pasting `https://cartesia.ai` shows **Add Cartesia** / **Try in Chat** only after Cursor lists the plugin and maps Cartesia domains.
+
+### Updating the Claude Code plugin
+
+Update the `cartesia` marketplace:
 
 ```text
 /plugin marketplace update cartesia
@@ -47,11 +65,10 @@ You can update easily skills using the plugin. First update the `cartesia` marke
 Then update the plugin:
 
 ```text
-```text
 /plugin update cartesia-skills
 ```
 
-Finally, reload plugins to get the updated skills:
+Reload plugins:
 
 ```text
 /reload-plugins
@@ -87,12 +104,17 @@ Cartesia API keys: [play.cartesia.ai/keys](https://play.cartesia.ai/keys).
 ## Repository layout
 
 ```text
+.cursor-plugin/plugin.json   # Cursor Marketplace plugin (name: cartesia)
 .claude-plugin/
-  marketplace.json   # Claude Code marketplace ("cartesia") vending the plugin
-  plugin.json        # cartesia-skills plugin manifest (plugin root = repo root)
+  marketplace.json           # Claude Code marketplace ("cartesia")
+  plugin.json                # cartesia-skills plugin
+.mcp.json                    # hosted MCP (https://mcp.cartesia.ai/mcp)
+plugin.json                  # Agent Plugins manifest
+commands/build-voice-agent.md
+rules/cartesia.mdc
 skills/
-  cartesia-api/      # HTTP/WebSocket, SDKs, optional MCP
-  line-voice-agent/  # Line SDK, CLI, telephony
+  cartesia-api/              # HTTP/WebSocket, SDKs, optional MCP
+  line-voice-agent/          # Line SDK, CLI, telephony
 ```
 
 Each skill folder has a `SKILL.md` (whose YAML **`name`** matches the folder) and optional `references/`.

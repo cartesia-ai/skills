@@ -28,7 +28,8 @@
 
 | Tool               | URL                                           |
 | ------------------ | --------------------------------------------- |
-| MCP server         | <https://github.com/cartesia-ai/cartesia-mcp> |
+| Hosted MCP         | <https://mcp.cartesia.ai/mcp>                 |
+| MCP source         | <https://github.com/cartesia-ai/cartesia-mcp> |
 | OpenClaw bootstrap | <https://cartesia.sh/openclaw.md>             |
 
 ## Agent Skills spec

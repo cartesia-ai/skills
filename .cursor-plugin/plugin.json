@@ -1,0 +1,29 @@
+{
+  "name": "cartesia",
+  "displayName": "Cartesia",
+  "version": "1.0.0",
+  "description": "Voice AI for agents: Sonic TTS, Ink STT, voice cloning, and Line voice agents. Hosted Cartesia MCP plus skills that keep API versions current.",
+  "author": {
+    "name": "Cartesia",
+    "email": "support@cartesia.ai",
+    "url": "https://cartesia.ai"
+  },
+  "homepage": "https://docs.cartesia.ai/tools/ai/agent-skills",
+  "repository": "https://github.com/cartesia-ai/skills",
+  "license": "MIT",
+  "keywords": [
+    "cartesia",
+    "tts",
+    "stt",
+    "sonic",
+    "ink",
+    "line",
+    "voice",
+    "speech",
+    "mcp",
+    "agents"
+  ],
+  "logo": "assets/logo.svg",
+  "primaryColor": "#309D4B",
+  "mcpServers": "./.mcp.json"
+}
