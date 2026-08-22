@@ -114,7 +114,7 @@ commands/build-voice-agent.md
 rules/cartesia.mdc
 skills/
   cartesia-api/              # HTTP/WebSocket, SDKs, optional MCP
-  cartesia-line/          # Line SDK, CLI, telephony
+  cartesia-line/             # Line SDK, CLI, telephony
 ```
 
 Each skill folder has a `SKILL.md` (whose YAML **`name`** matches the folder) and optional `references/`.
