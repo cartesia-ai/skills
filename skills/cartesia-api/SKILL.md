@@ -1,12 +1,12 @@
 ---
 name: cartesia-api
-description: Integrate Cartesia speech APIs (TTS, STT, voices) in application code or coding-agent workflows. Use when the user asks about Cartesia REST/WebSocket APIs, SDKs, API keys, Sonic TTS, Ink STT, voice IDs, access tokens, or embedding voice in an app. For Cartesia Line deployed agents, CLI deploy, and telephony, use the line-voice-agent skill instead.
+description: Integrate Cartesia speech APIs (TTS, STT, voices) in application code or coding-agent workflows. Use when the user asks about Cartesia REST/WebSocket APIs, SDKs, API keys, Sonic TTS, Ink STT, voice IDs, access tokens, or embedding voice in an app. For Cartesia Line deployed agents, CLI deploy, and telephony, use the cartesia-line skill instead.
 compatibility: Requires a Cartesia API key from https://play.cartesia.ai/keys for server-side calls. Client apps must use short-lived access tokens, not raw API keys. Optional hosted MCP is https://mcp.cartesia.ai/mcp (OAuth via the Playground). Local uvx cartesia-mcp is for development.
 ---
 
 # Cartesia Voice & Speech APIs
 
-Cartesia provides **text-to-speech (Sonic)**, **speech-to-text (Ink)**, **voices** (library, clone, localize), and related **HTTPS** and **WebSocket** APIs. This skill covers **application integration** and **agent-assisted coding**. For **Cartesia Line** (managed voice agents, `cartesia` CLI, telephony, Line SDK), use **[line-voice-agent](../line-voice-agent/SKILL.md)**.
+Cartesia provides **text-to-speech (Sonic)**, **speech-to-text (Ink)**, **voices** (library, clone, localize), and related **HTTPS** and **WebSocket** APIs. This skill covers **application integration** and **agent-assisted coding**. For **Cartesia Line** (managed voice agents, `cartesia` CLI, telephony, Line SDK), use **[cartesia-line](../cartesia-line/SKILL.md)**.
 
 ## Core directives
 
@@ -78,7 +78,7 @@ Replace `/heads/main/` with `/tags/vX.X.X/` (e.g. `/tags/v3.2.0/`) to source cod
 | ------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
 | App or backend calling REST/WebSocket | [Python SDK](https://github.com/cartesia-ai/cartesia-python), [JS/TS SDK](https://github.com/cartesia-ai/cartesia-js), or native API requests / fetch |
 | IDE agent with MCP                    | Hosted `https://mcp.cartesia.ai/mcp` + docs fallback                                                                                                  |
-| Deployed voice agent, Line, telephony | **[line-voice-agent](../line-voice-agent/SKILL.md)**                                                                                                              |
+| Deployed voice agent, Line, telephony | **[cartesia-line](../cartesia-line/SKILL.md)**                                                                                                              |
 | OpenClaw bootstrap                    | `https://cartesia.sh/openclaw.md` then docs / `llms.txt`                                                                                              |
 
 ## Quick start (HTTP TTS, one-shot)
@@ -123,7 +123,7 @@ One locale can have many accents. `en-US` includes General American and Southern
 
 ## Related material in this repo
 
-- **Line voice agents:** [line-voice-agent](../line-voice-agent/SKILL.md)
+- **Line voice agents:** [cartesia-line](../cartesia-line/SKILL.md)
 - **Link hub:** [references/resources.md](references/resources.md)
 
 ## Common mistakes
@@ -132,4 +132,4 @@ One locale can have many accents. `en-US` includes General American and Southern
 2. **API keys in frontend code**: use short-lived access tokens minted by your backend.
 3. **Wrong auth header style**: examples use **`Authorization: Bearer`**; match current docs, not old snippets.
 4. **Stale SDK / model code from memory**: training data lags the API. Model IDs drift (e.g. `sonic-2`), and the JS SDK's named `import { CartesiaClient }` is deprecated and won't run in browsers — use `import Cartesia from "@cartesia/cartesia-js"` (or the default import). Confirm models against the models docs and SDK usage against the linked README / examples.
-5. **Using this skill for `cartesia deploy` / Line**: switch to **line-voice-agent**.
+5. **Using this skill for `cartesia deploy` / Line**: switch to **cartesia-line**.

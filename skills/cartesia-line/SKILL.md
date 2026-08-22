@@ -1,5 +1,5 @@
 ---
-name: line-voice-agent
+name: cartesia-line
 description: Build voice agents with the Cartesia Line SDK. Supports 100+ LLM providers via LiteLLM with tool calling, multi-agent handoffs, and real-time interruption handling.
 ---
 
