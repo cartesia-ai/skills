@@ -1,7 +1,6 @@
 {
   "mcpServers": {
     "cartesia": {
-      "type": "http",
       "url": "https://mcp.cartesia.ai/mcp"
     }
   }
