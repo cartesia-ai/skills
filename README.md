@@ -8,7 +8,7 @@
 
 **Agent Skills** help coding agents ship Cartesia integrations the way we document them: **auth**, **`Cartesia-Version`**, and when to use Line vs raw APIs. Each skill is a versioned `SKILL.md` (plus optional `references/`). Contracts live on [docs.cartesia.ai](https://docs.cartesia.ai); use the [Python](https://github.com/cartesia-ai/cartesia-python) and [JS/TS](https://github.com/cartesia-ai/cartesia-js) SDKs in app code and optional [MCP](https://docs.cartesia.ai/tools/ai/mcp.md) in the IDE if you want it.
 
-This repository follows the [Agent Skills](https://agentskills.io/home) convention. It is a [Claude Code plugin marketplace](https://code.claude.com/docs/en/plugin-marketplaces) and a Cursor plugin (`name: cartesia`). Product skills live under **`skills/cartesia-api/`** (HTTP/WebSocket + client libraries) and **`skills/line-voice-agent/`** (Cartesia Line).
+This repository follows the [Agent Skills](https://agentskills.io/home) convention. It is a [Claude Code plugin marketplace](https://code.claude.com/docs/en/plugin-marketplaces) and a Cursor plugin (`name: cartesia`). Product skills live under **`skills/cartesia-api/`** (HTTP/WebSocket + client libraries) and **`skills/cartesia-line/`** (Cartesia Line).
 
 ## Install
 
@@ -18,7 +18,7 @@ This repository follows the [Agent Skills](https://agentskills.io/home) conventi
 npx skills add cartesia-ai/skills
 ```
 
-Select **cartesia-api** and/or **line-voice-agent** when prompted.
+Select **cartesia-api** and/or **cartesia-line** when prompted.
 
 ### Claude Code (plugin)
 
@@ -79,7 +79,7 @@ Reload plugins:
 | Skill | Path | Use when |
 |-------|------|----------|
 | **cartesia-api** | [`skills/cartesia-api`](./skills/cartesia-api) | **Application code**: REST/WebSocket, Sonic TTS, Ink STT, voices, SDKs, optional MCP. |
-| **line-voice-agent** | [`skills/line-voice-agent`](./skills/line-voice-agent) | **Cartesia Line**: CLI, `cartesia deploy`, `VoiceAgentApp`, telephony, multi-agent tools. |
+| **cartesia-line** | [`skills/cartesia-line`](./skills/cartesia-line) | **Cartesia Line**: CLI, `cartesia deploy`, `VoiceAgentApp`, telephony, multi-agent tools. |
 
 ## Where to look (for LLMs and humans)
 
@@ -114,7 +114,7 @@ commands/build-voice-agent.md
 rules/cartesia.mdc
 skills/
   cartesia-api/              # HTTP/WebSocket, SDKs, optional MCP
-  line-voice-agent/          # Line SDK, CLI, telephony
+  cartesia-line/          # Line SDK, CLI, telephony
 ```
 
 Each skill folder has a `SKILL.md` (whose YAML **`name`** matches the folder) and optional `references/`.
