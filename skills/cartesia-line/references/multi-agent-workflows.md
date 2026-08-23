@@ -1,5 +1,11 @@
 # Multi-Agent Workflows
 
+> [!WARNING]
+> The Cartesia Line SDK is deprecated and stops running on **2026-11-20**. Use
+> [Cartesia Managed Agents](https://docs.cartesia.ai/agents) for new work, and
+> the [migration guide](https://docs.cartesia.ai/agents/migrate-from-line) to
+> move an existing agent.
+
 Build voice agents that can hand off conversations to specialized agents, implement guardrails, and coordinate complex workflows.
 
 ## agent_as_handoff Helper

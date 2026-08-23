@@ -2,7 +2,7 @@
   "name": "cartesia",
   "displayName": "Cartesia",
   "version": "1.0.0",
-  "description": "Voice AI for agents: Sonic TTS, Ink STT, voice cloning, and Line voice agents. Hosted Cartesia MCP plus skills that keep API versions current.",
+  "description": "Voice AI for agents: Sonic TTS, Ink STT, voice cloning, and managed voice agents. Hosted Cartesia MCP plus skills that keep API versions current.",
   "author": {
     "name": "Cartesia",
     "email": "support@cartesia.ai",

@@ -79,7 +79,7 @@ Reload plugins:
 | Skill | Path | Use when |
 |-------|------|----------|
 | **cartesia-api** | [`skills/cartesia-api`](./skills/cartesia-api) | **Application code**: REST/WebSocket, Sonic TTS, Ink STT, voices, SDKs, optional MCP. |
-| **cartesia-line** | [`skills/cartesia-line`](./skills/cartesia-line) | **Cartesia Line**: CLI, `cartesia deploy`, `VoiceAgentApp`, telephony, multi-agent tools. |
+| **cartesia-line** | [`skills/cartesia-line`](./skills/cartesia-line) | **Deprecated.** Cartesia Line: CLI, `cartesia deploy`, `VoiceAgentApp`, telephony, multi-agent tools. Line stops running 2026-11-20; use [Managed Agents](https://docs.cartesia.ai/agents) instead. |
 
 ## Where to look (for LLMs and humans)
 

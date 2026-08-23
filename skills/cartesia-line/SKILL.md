@@ -1,9 +1,19 @@
 ---
 name: cartesia-line
-description: Build voice agents with the Cartesia Line SDK. Supports 100+ LLM providers via LiteLLM with tool calling, multi-agent handoffs, and real-time interruption handling.
+description: DEPRECATED. Maintain an existing Cartesia Line SDK voice agent until Line stops running on 2026-11-20. For new agents use Cartesia Managed Agents (https://docs.cartesia.ai/agents) instead of this skill.
 ---
 
 # Line SDK Voice Agent Guide
+
+> [!WARNING]
+> **The Cartesia Line SDK is deprecated.** Cartesia stops hosting Line agents on
+> **2026-11-20**, after which they stop taking calls. This skill is kept for
+> teams maintaining an existing Line agent until then.
+>
+> For anything new, use **Cartesia Managed Agents**: you configure the agent and
+> Cartesia runs it, with no repository, no deploys, and no SDK.
+> See <https://docs.cartesia.ai/agents> and the
+> [migration guide](https://docs.cartesia.ai/agents/migrate-from-line).
 
 Build production voice agents with the Cartesia Line SDK. This guide covers agent creation, tool patterns, multi-agent workflows, and LLM provider configuration.
 
