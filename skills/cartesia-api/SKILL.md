@@ -1,12 +1,12 @@
 ---
 name: cartesia-api
-description: Integrate Cartesia speech APIs (TTS, STT, voices) in application code or coding-agent workflows. Use when the user asks about Cartesia REST/WebSocket APIs, SDKs, API keys, Sonic TTS, Ink STT, voice IDs, access tokens, or embedding voice in an app. For Cartesia Line deployed agents, CLI deploy, and telephony, use the cartesia-line skill instead.
+description: Integrate Cartesia speech APIs (TTS, STT, voices) in application code or coding-agent workflows. Use when the user asks about Cartesia REST/WebSocket APIs, SDKs, API keys, Sonic TTS, Ink STT, voice IDs, access tokens, or embedding voice in an app. For hosted voice agents on the web or phone, use Cartesia Managed Agents (https://docs.cartesia.ai/agents/introduction.md). Use the cartesia-line skill only to maintain an existing Line SDK agent.
 compatibility: Requires a Cartesia API key from https://play.cartesia.ai/keys for server-side calls. Client apps must use short-lived access tokens, not raw API keys. Optional hosted MCP is https://mcp.cartesia.ai/mcp (OAuth via the Playground). Local uvx cartesia-mcp is for development.
 ---
 
 # Cartesia Voice & Speech APIs
 
-Cartesia provides **text-to-speech (Sonic)**, **speech-to-text (Ink)**, **voices** (library, clone, localize), and related **HTTPS** and **WebSocket** APIs. This skill covers **application integration** and **agent-assisted coding**. For **Cartesia Line** (managed voice agents, `cartesia` CLI, telephony, Line SDK), use **[cartesia-line](../cartesia-line/SKILL.md)**.
+Cartesia provides **text-to-speech (Sonic)**, **speech-to-text (Ink)**, **voices** (library, clone, localize), and related **HTTPS** and **WebSocket** APIs. This skill covers **application integration** and **agent-assisted coding**, including **[Managed Agents](#voice-agents-with-managed-agents)** for hosted voice agents. Use **[cartesia-line](../cartesia-line/SKILL.md)** only to maintain an existing Line SDK agent; Line stops running on 2026-11-20.
 
 ## Core directives
 
@@ -33,7 +33,9 @@ Cartesia provides **text-to-speech (Sonic)**, **speech-to-text (Ink)**, **voices
 
 ### Text-to-speech with Sonic (generating audio)
 
-- **Choosing a TTS model:** See [TTS models](https://docs.cartesia.ai/build-with-cartesia/tts-models/latest.md) for current model IDs, supported languages, and features. Don't trust a model ID from memory — training data goes stale (e.g. `sonic-2` is no longer current)
+- **Choosing a TTS model:** See [TTS models](https://docs.cartesia.ai/build-with-cartesia/tts-models/latest.md) for current model IDs, supported languages, and features. Don't trust a model ID from memory — training data goes stale
+  - As of October 2026 the current model is `sonic-3.6` (pinned snapshot `sonic-3.6-2026-08-27`)
+  - `sonic-2`, `sonic-turbo` and `sonic-3-2025-10-27` stop working on 2026-10-20 and return `model_sunsetted`; `sonic`, `sonic-english` and `sonic-multilingual` are already retired; `sonic-latest` and `sonic-3-latest` are deprecated aliases. See [API changes](https://docs.cartesia.ai/build-with-cartesia/tts-models/api-changes.md)
 - **Voice IDs:** Don't _invent_ a voice ID — a made-up UUID won't resolve. Real voice IDs are **stable**, so hardcoding a real one as a constant is fine and common; copy one from the [playground](https://play.cartesia.ai) or [List Voices](https://docs.cartesia.ai/api-reference/voices/list.md). Use List Voices to _discover/choose_ a voice, not as a required call on every request
 - **Choosing an endpoint — bytes vs WebSocket:** if the text is known up front (a fixed string, a button press), use **`POST /tts/bytes`** — it streams audio back as it's generated and is simpler. Reach for the **WebSocket** only when the _input text_ arrives incrementally (e.g. piping an LLM's token stream) — the [continuations](https://docs.cartesia.ai/build-with-cartesia/capability-guides/stream-inputs-using-continuations.md) case. Don't default to WebSockets; compare them in [TTS endpoints](https://docs.cartesia.ai/use-the-api/compare-tts-endpoints.md)
 - **Output audio format:** See [TTS output audio format](https://docs.cartesia.ai/build-with-cartesia/capability-guides/tts-output-audio-format.md) for containers/encodings/sample rates (`wav` + `pcm_s16le` @ 44.1 kHz is a safe, self-contained default; `mp3` carries no separate `encoding`)
@@ -49,6 +51,13 @@ Cartesia provides **text-to-speech (Sonic)**, **speech-to-text (Ink)**, **voices
     - Stripping or inserting whitespace in transcripts (read the model's text **verbatim** — no `.strip()`, no normalization)
     - Improperly concatenating transcript pieces
     - Not following the API spec
+
+### Voice agents with Managed Agents
+
+- **What it is:** Cartesia hosts the whole agent: Ink listens, the LLM you choose replies, Sonic speaks, with turn-taking and interruptions handled. You configure instructions, voice, model and tools. See [Managed Agents](https://docs.cartesia.ai/agents/introduction.md) and [Agent configuration](https://docs.cartesia.ai/agents/configuration.md)
+- **Connecting an app:** stream audio and events over the [WebSocket API](https://docs.cartesia.ai/line/integrations/websocket-api.md). From a browser, mint an access token on your server and pass it as `?access_token=`; never ship the API key
+- **Phone calls:** attach a [Cartesia number](https://docs.cartesia.ai/line/integrations/telephony/cartesia-numbers.md) or [import a Twilio number](https://docs.cartesia.ai/line/integrations/telephony/twilio/integration.md); see [Outbound calling](https://docs.cartesia.ai/line/integrations/telephony/outbound-dialing.md) and [Batch calling](https://docs.cartesia.ai/line/integrations/telephony/batch-calling.md)
+- **Actions during a call:** [webhook tools](https://docs.cartesia.ai/agents/webhook-tools.md) call your HTTPS endpoint, [client tools](https://docs.cartesia.ai/agents/client-tools.md) run in your app over the WebSocket, and [system tools](https://docs.cartesia.ai/agents/system-tools.md) handle transfers and hang-ups
 
 ### Cartesia Python SDK
 
@@ -78,7 +87,8 @@ Replace `/heads/main/` with `/tags/vX.X.X/` (e.g. `/tags/v3.2.0/`) to source cod
 | ------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
 | App or backend calling REST/WebSocket | [Python SDK](https://github.com/cartesia-ai/cartesia-python), [JS/TS SDK](https://github.com/cartesia-ai/cartesia-js), or native API requests / fetch |
 | IDE agent with MCP                    | Hosted `https://mcp.cartesia.ai/mcp` + docs fallback                                                                                                  |
-| Deployed voice agent, Line, telephony | **[cartesia-line](../cartesia-line/SKILL.md)**                                                                                                              |
+| Hosted voice agent (web or phone)     | [Managed Agents](https://docs.cartesia.ai/agents/introduction.md)                                                                                    |
+| Existing Line SDK agent               | **[cartesia-line](../cartesia-line/SKILL.md)** (Line stops running on 2026-11-20)                                                                     |
 | OpenClaw bootstrap                    | `https://cartesia.sh/openclaw.md` then docs / `llms.txt`                                                                                              |
 
 ## Quick start (HTTP TTS, one-shot)
@@ -88,10 +98,10 @@ Shape only: confirm field names and enums against the [API reference](https://do
 ```bash
 curl -X POST "https://api.cartesia.ai/tts/bytes" \
   -H "Authorization: Bearer $CARTESIA_API_KEY" \
-  -H "Cartesia-Version: 2026-03-01" \
+  -H "Cartesia-Version: 2026-08-14" \
   -H "Content-Type: application/json" \
   -d '{
-    "model_id": "sonic-3",
+    "model_id": "sonic-3.6",
     "transcript": "Hello from Cartesia.",
     "voice": { "id": "f786b574-daa5-4673-aa0c-cbe3e8534c02" },
     "output_format": {
@@ -108,7 +118,8 @@ curl -X POST "https://api.cartesia.ai/tts/bytes" \
 
 - **Sonic** = TTS model used to generate speech
 - **Ink** = STT model used to transcribe audio
-- **Line** = separate product: you deploy **your** Python agent; Cartesia runs STT/TTS/telephony around it, different from "call TTS API from my server."
+- **Managed Agents** = Cartesia hosts the voice agent (STT, LLM, TTS, turn-taking, phone numbers); your app connects over a WebSocket or a phone call
+- **Line** = the older SDK where you deploy **your** Python agent; maintenance only, it stops running on 2026-11-20
 - **Concurrency / quota:** Handle `429`-class and structured `concurrency_limited` / `quota_exceeded` per [API errors](https://docs.cartesia.ai/use-the-api/api-errors.md).
 
 ## Language vs locale vs accent
@@ -123,7 +134,7 @@ One locale can have many accents. `en-US` includes General American and Southern
 
 ## Related material in this repo
 
-- **Line voice agents:** [cartesia-line](../cartesia-line/SKILL.md)
+- **Existing Line SDK agents:** [cartesia-line](../cartesia-line/SKILL.md)
 - **Link hub:** [references/resources.md](references/resources.md)
 
 ## Common mistakes
@@ -132,4 +143,4 @@ One locale can have many accents. `en-US` includes General American and Southern
 2. **API keys in frontend code**: use short-lived access tokens minted by your backend.
 3. **Wrong auth header style**: examples use **`Authorization: Bearer`**; match current docs, not old snippets.
 4. **Stale SDK / model code from memory**: training data lags the API. Model IDs drift (e.g. `sonic-2`), and the JS SDK's named `import { CartesiaClient }` is deprecated and won't run in browsers — use `import Cartesia from "@cartesia/cartesia-js"` (or the default import). Confirm models against the models docs and SDK usage against the linked README / examples.
-5. **Using this skill for `cartesia deploy` / Line**: switch to **cartesia-line**.
+5. **Starting a new voice agent on Line**: use Managed Agents; switch to **cartesia-line** only to maintain an existing Line agent.
