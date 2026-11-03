@@ -6,9 +6,9 @@
 
 [![Install via skills.sh](https://img.shields.io/badge/skills.sh-install-green)](https://skills.sh/cartesia-ai/skills)
 
-**Agent Skills** help coding agents ship Cartesia integrations the way we document them: **auth**, **`Cartesia-Version`**, and when to use Line vs raw APIs. Each skill is a versioned `SKILL.md` (plus optional `references/`). Contracts live on [docs.cartesia.ai](https://docs.cartesia.ai); use the [Python](https://github.com/cartesia-ai/cartesia-python) and [JS/TS](https://github.com/cartesia-ai/cartesia-js) SDKs in app code and optional [MCP](https://docs.cartesia.ai/tools/ai/mcp.md) in the IDE if you want it.
+**Agent Skills** help coding agents ship Cartesia integrations the way we document them: **auth**, **`Cartesia-Version`**, and when to call speech APIs vs Managed Agents. Each skill is a versioned `SKILL.md` (plus optional `references/`). Contracts live on [docs.cartesia.ai](https://docs.cartesia.ai); use the [Python](https://github.com/cartesia-ai/cartesia-python) and [JS/TS](https://github.com/cartesia-ai/cartesia-js) SDKs in app code and optional [MCP](https://docs.cartesia.ai/tools/ai/mcp.md) in the IDE if you want it.
 
-This repository follows the [Agent Skills](https://agentskills.io/home) convention. It is a [Claude Code plugin marketplace](https://code.claude.com/docs/en/plugin-marketplaces) and a Cursor plugin (`name: cartesia`). Product skills live under **`skills/cartesia-api/`** (HTTP/WebSocket + client libraries) and **`skills/cartesia-line/`** (Cartesia Line).
+This repository follows the [Agent Skills](https://agentskills.io/home) convention. It is a [Claude Code plugin marketplace](https://code.claude.com/docs/en/plugin-marketplaces) and a Cursor plugin (`name: cartesia`). Product skills live under **`skills/cartesia-api/`** (HTTP/WebSocket + client libraries).
 
 ## Install
 
@@ -18,7 +18,7 @@ This repository follows the [Agent Skills](https://agentskills.io/home) conventi
 npx skills add cartesia-ai/skills
 ```
 
-Select **cartesia-api** and/or **cartesia-line** when prompted.
+Select **cartesia-api** when prompted.
 
 ### Claude Code (plugin)
 
@@ -44,7 +44,7 @@ In Cursor chat:
 /add-plugin cartesia
 ```
 
-Or install from the [Cursor Marketplace](https://cursor.com/marketplace) (after listing). The plugin registers hosted MCP at `https://mcp.cartesia.ai/mcp` (sign in via the Playground) and loads the skills, rule, and `/build-voice-agent` command in this repo.
+Or install from the [Cursor Marketplace](https://cursor.com/marketplace) (after listing). The plugin registers hosted MCP at `https://mcp.cartesia.ai/mcp` (sign in via the Playground) and loads the skills and rule in this repo.
 
 Local test before the marketplace listing:
 
@@ -79,7 +79,8 @@ Reload plugins:
 | Skill | Path | Use when |
 |-------|------|----------|
 | **cartesia-api** | [`skills/cartesia-api`](./skills/cartesia-api) | **Application code**: REST/WebSocket, Sonic TTS, Ink STT, voices, SDKs, optional MCP. |
-| **cartesia-line** | [`skills/cartesia-line`](./skills/cartesia-line) | **Cartesia Line**: CLI, `cartesia deploy`, `VoiceAgentApp`, telephony, multi-agent tools. |
+
+For **Managed Agents** (hosted voice agents, telephony, tools), use the [Managed Agents docs](https://docs.cartesia.ai/agents/introduction) rather than a skill in this repo.
 
 ## Where to look (for LLMs and humans)
 
@@ -90,16 +91,7 @@ Reload plugins:
 | **[llms.txt](https://docs.cartesia.ai/llms.txt)** / **[llms-full.txt](https://docs.cartesia.ai/llms-full.txt)** | Machine-readable doc indexes for RAG and fetches. |
 | **SDKs** | [Python](https://github.com/cartesia-ai/cartesia-python), [JS/TS](https://github.com/cartesia-ai/cartesia-js) for production integrations. |
 | **[MCP](https://docs.cartesia.ai/tools/ai/mcp.md)** | Optional IDE tooling; not a substitute for SDKs in apps. |
-
-## Configuration (Line)
-
-Voice agents on Cartesia Line need a **Cartesia** key and at least one **LLM** provider key:
-
-```bash
-export ANTHROPIC_API_KEY="your-anthropic-key"  # or OPENAI_API_KEY, GEMINI_API_KEY, etc.
-```
-
-Cartesia API keys: [play.cartesia.ai/keys](https://play.cartesia.ai/keys).
+| **[Managed Agents](https://docs.cartesia.ai/agents/introduction)** | Hosted voice agents, telephony, and tools. |
 
 ## Repository layout
 
@@ -110,11 +102,9 @@ Cartesia API keys: [play.cartesia.ai/keys](https://play.cartesia.ai/keys).
   plugin.json                # cartesia-skills plugin
 .mcp.json                    # hosted MCP (https://mcp.cartesia.ai/mcp)
 plugin.json                  # Agent Plugins manifest
-commands/build-voice-agent.md
 rules/cartesia.mdc
 skills/
   cartesia-api/              # HTTP/WebSocket, SDKs, optional MCP
-  cartesia-line/             # Line SDK, CLI, telephony
 ```
 
 Each skill folder has a `SKILL.md` (whose YAML **`name`** matches the folder) and optional `references/`.
