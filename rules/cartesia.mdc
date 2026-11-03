@@ -1,15 +1,14 @@
 ---
-description: When building with Cartesia TTS, STT, voices, SDKs, or Line voice agents, fetch current docs instead of using training data.
+description: When building with Cartesia TTS, STT, voices, SDKs, or Managed Agents, fetch current docs instead of using training data.
 alwaysApply: false
 globs:
   - "**/*cartesia*"
   - "**/cartesia.toml"
-  - "**/cartesia-line/**"
 ---
 
 # Cartesia
 
-Fetch current docs before writing Cartesia code. Model IDs, `Cartesia-Version` dates, and Line CLI flags go stale.
+Fetch current docs before writing Cartesia code. Model IDs and `Cartesia-Version` dates go stale.
 
 ## Docs
 
@@ -17,7 +16,7 @@ Fetch current docs before writing Cartesia code. Model IDs, `Cartesia-Version` d
 - Append `.md` to any `docs.cartesia.ai` page for Markdown (example: https://docs.cartesia.ai/use-the-api/api-conventions.md)
 - TTS models: https://docs.cartesia.ai/build-with-cartesia/tts-models/latest.md
 - STT models: https://docs.cartesia.ai/build-with-cartesia/stt-models/latest.md
-- Line: https://docs.cartesia.ai/line/start-building/quickstart.md
+- Managed Agents: https://docs.cartesia.ai/agents/introduction.md
 - MCP: https://docs.cartesia.ai/tools/ai/mcp.md
 
 ## MCP
