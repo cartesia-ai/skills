@@ -1,12 +1,12 @@
 ---
 name: cartesia-api
-description: Integrate Cartesia speech APIs (TTS, STT, voices) in application code or coding-agent workflows. Use when the user asks about Cartesia REST/WebSocket APIs, SDKs, API keys, Sonic TTS, Ink STT, voice IDs, access tokens, or embedding voice in an app. For hosted voice agents, telephony, and tools, use Cartesia Managed Agents docs (https://docs.cartesia.ai/agents/introduction) instead of this skill.
+description: Integrate Cartesia speech APIs (TTS, STT, voices) in application code or coding-agent workflows. Use when the user asks about Cartesia REST/WebSocket APIs, SDKs, API keys, Sonic TTS, Ink STT, voice IDs, access tokens, or embedding voice in an app. For hosted voice agents, telephony, and tools, use the cartesia-agents skill instead.
 compatibility: Requires a Cartesia API key from https://play.cartesia.ai/keys for server-side calls. Client apps must use short-lived access tokens, not raw API keys. Optional hosted MCP is https://mcp.cartesia.ai/mcp (OAuth via the Playground). Local uvx cartesia-mcp is for development.
 ---
 
 # Cartesia Voice & Speech APIs
 
-Cartesia provides **text-to-speech (Sonic)**, **speech-to-text (Ink)**, **voices** (library, clone, localize), and related **HTTPS** and **WebSocket** APIs. This skill covers **application integration** and **agent-assisted coding**. For **Managed Agents** (hosted voice agents, telephony, tools), use the [Managed Agents docs](https://docs.cartesia.ai/agents/introduction.md).
+Cartesia provides **text-to-speech (Sonic)**, **speech-to-text (Ink)**, **voices** (library, clone, localize), and related **HTTPS** and **WebSocket** APIs. This skill covers **application integration** and **agent-assisted coding**. For **Managed Agents** (hosted voice agents, telephony, tools), use the **cartesia-agents** skill.
 
 ## Core directives
 
@@ -132,4 +132,4 @@ One locale can have many accents. `en-US` includes General American and Southern
 2. **API keys in frontend code**: use short-lived access tokens minted by your backend.
 3. **Wrong auth header style**: examples use **`Authorization: Bearer`**; match current docs, not old snippets.
 4. **Stale SDK / model code from memory**: training data lags the API. Model IDs drift (e.g. `sonic-2`), and the JS SDK's named `import { CartesiaClient }` is deprecated and won't run in browsers — use `import Cartesia from "@cartesia/cartesia-js"` (or the default import). Confirm models against the models docs and SDK usage against the linked README / examples.
-5. **Using this skill for hosted voice agents / telephony**: use [Managed Agents](https://docs.cartesia.ai/agents/introduction.md).
+5. **Using this skill for hosted voice agents / telephony**: use the **cartesia-agents** skill.
