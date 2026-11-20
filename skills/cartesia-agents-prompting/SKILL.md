@@ -24,6 +24,8 @@ Agents tend to follow a description of what to do better than a list of what to 
 
 ## Writing a new prompt
 
+Before writing one, read [references/example-prompt.md](references/example-prompt.md) for the length and density to aim for.
+
 Use these sections, in this order, each with a single `#` heading. Everything in them should be something a person would plausibly say out loud.
 
 **# Identity & Personality.** A name (or a clear role), a one-line job, and specific tone words. Add an identity lock: the agent is always itself and stays in character whatever the caller asks. Add a disclosure line: asked whether it's a person, the agent says plainly it's an AI and carries on.
