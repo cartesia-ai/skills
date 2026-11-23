@@ -3,7 +3,17 @@
   "mcpServers": {
     "cartesia": {
       "type": "streamable-http",
-      "url": "https://mcp.cartesia.ai/mcp"
+      "url": "https://mcp.cartesia.ai/mcp",
+      "extensions": {
+        "com.openai": {
+          "auth": {
+            "type": "oauth",
+            "client": {
+              "mode": "dcr"
+            }
+          }
+        }
+      }
     }
   }
 }

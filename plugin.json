@@ -8,7 +8,7 @@
     "email": "support@cartesia.ai",
     "url": "https://cartesia.ai"
   },
-  "homepage": "https://docs.cartesia.ai/tools/ai/agent-skills",
+  "homepage": "https://docs.cartesia.ai/tools/ai/mcp",
   "repository": "https://github.com/cartesia-ai/skills",
   "license": "MIT",
   "keywords": [
@@ -21,5 +21,93 @@
     "speech",
     "mcp",
     "agents"
-  ]
+  ],
+  "extensions": {
+    "com.openai": {
+      "onboardingSkill": "./skills/cartesia-api/SKILL.md",
+      "interface": {
+        "displayName": "Cartesia",
+        "shortDescription": "Generate speech, transcribe audio, manage voices, and build Managed Agents via Cartesia MCP.",
+        "longDescription": "Connect Cartesia's hosted MCP to ChatGPT and Codex. Generate speech with Sonic, transcribe with Ink, browse and clone voices, manage pronunciation dictionaries, and create or debug Managed Agents (CRUD, calls, knowledge, tools) after Cartesia OAuth. No API key paste required.",
+        "developerName": "Cartesia",
+        "category": "Productivity",
+        "capabilities": [
+          "Text to speech",
+          "Speech to text",
+          "Voice library and cloning",
+          "Managed Agents"
+        ],
+        "websiteURL": "https://cartesia.ai",
+        "supportURL": "https://docs.cartesia.ai/tools/ai/mcp",
+        "privacyPolicyURL": "https://www.cartesia.ai/legal/privacy",
+        "termsOfServiceURL": "https://www.cartesia.ai/legal/terms",
+        "defaultPrompt": [
+          "List English female Cartesia voices suitable for a podcast intro.",
+          "Generate a short TTS sample with a Cartesia voice and return a download URL.",
+          "Create a Managed Agent that greets callers and share the playground URL."
+        ],
+        "brandColor": "#309D4B",
+        "brandColorDark": "#ABD49E",
+        "composerIcon": "./assets/icon.png",
+        "composerIconDark": "./assets/icon.png",
+        "logo": "./assets/logo.png",
+        "logoDark": "./assets/logo.png"
+      },
+      "review": {
+        "test_cases": {
+          "positive": [
+            {
+              "description": "List voices with filters",
+              "prompt": "List English female Cartesia voices suitable for a podcast intro.",
+              "tools_triggered": "list_voices",
+              "expected_behavior": "Returns voice metadata (ids, names, language/gender) for matching Cartesia voices."
+            },
+            {
+              "description": "Generate TTS and return downloadable audio",
+              "prompt": "Using a Cartesia voice from list_voices, generate a short TTS sample saying hello and return a download URL.",
+              "tools_triggered": "list_voices, text_to_speech",
+              "expected_behavior": "Produces speech for the requested text and returns a file id and/or download URL the reviewer can open."
+            },
+            {
+              "description": "Get a known voice by id",
+              "prompt": "Get details for one of the voices you just listed.",
+              "tools_triggered": "get_voice",
+              "expected_behavior": "Returns metadata for that voice id without error."
+            },
+            {
+              "description": "List pronunciation dictionaries",
+              "prompt": "List my Cartesia pronunciation dictionaries.",
+              "tools_triggered": "list_pronunciation_dicts",
+              "expected_behavior": "Returns the account's pronunciation dictionaries (may be an empty list)."
+            },
+            {
+              "description": "List Managed Agents",
+              "prompt": "List my Cartesia Managed Agents.",
+              "tools_triggered": "list_agents",
+              "expected_behavior": "Returns the connected account's agents (may be empty) without exposing unrelated accounts."
+            }
+          ],
+          "negative": [
+            {
+              "description": "TTS with invalid voice id",
+              "prompt": "Generate speech with voice_id not-a-real-voice-id-0000."
+            },
+            {
+              "description": "Delete a public or unauthorized voice",
+              "prompt": "Delete the system public Cartesia Katie voice."
+            },
+            {
+              "description": "Admin credit usage without admin access",
+              "prompt": "Show this org's credit usage for the last 7 days."
+            }
+          ]
+        },
+        "commerce": false,
+        "commerce_description": "Users sign in to an existing Cartesia account. The plugin does not sell credits, subscriptions, or checkout inside ChatGPT."
+      },
+      "publication": {
+        "release_notes": "Initial OpenAI Plugins Directory listing for hosted Cartesia MCP (speech + Managed Agents) with the cartesia-api skill."
+      }
+    }
+  }
 }
