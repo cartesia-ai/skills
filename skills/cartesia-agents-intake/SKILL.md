@@ -5,7 +5,7 @@ description: Work out what a Cartesia voice agent should do before building it, 
 
 # Voice agent intake
 
-Most weak voice agents come from a vague goal, not a weak prompt. Before building anything, agree with the user on what the agent is for and how they will know it works, then write that down as an agent brief. The brief drives the agent's instructions, the test calls, and the evaluation metrics.
+Most weak voice agents come from a vague goal, not a weak prompt. Before building anything, agree with the user on what the agent is for and how they will know it works, then write that down as an agent brief. The brief drives the agent's instructions and the test calls, and its success checks are the goal every change is judged against.
 
 ## How to run the intake
 
@@ -97,7 +97,7 @@ Summarize what you heard in two or three sentences and ask whether that is the a
 - <unknown, and the default used until it is answered>
 ```
 
-Turn each success check into at least one test call, including the calls the user worries about most. The same checks become evaluation metrics later.
+Turn each success check into at least one test call, including the calls the user worries about most.
 
 ## Next
 
