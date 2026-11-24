@@ -79,8 +79,9 @@ Reload plugins:
 | Skill | Path | Use when |
 |-------|------|----------|
 | **cartesia-api** | [`skills/cartesia-api`](./skills/cartesia-api) | **Application code**: REST/WebSocket, Sonic TTS, Ink STT, voices, SDKs, optional MCP. |
-
-For **Managed Agents** (hosted voice agents, telephony, tools), use the [Managed Agents docs](https://docs.cartesia.ai/agents/introduction) rather than a skill in this repo.
+| **cartesia-agents** | [`skills/cartesia-agents`](./skills/cartesia-agents) | **Managed Agents** through the Cartesia MCP: build an agent, test and review each change on a dev agent, and go live. |
+| **cartesia-agents-intake** | [`skills/cartesia-agents-intake`](./skills/cartesia-agents-intake) | Working out what a new voice agent should do, written up as an agent brief. |
+| **cartesia-agents-prompting** | [`skills/cartesia-agents-prompting`](./skills/cartesia-agents-prompting) | Writing and revising a voice agent's instructions. |
 
 ## Where to look (for LLMs and humans)
 
@@ -105,6 +106,9 @@ plugin.json                  # Agent Plugins manifest
 rules/cartesia.mdc
 skills/
   cartesia-api/              # HTTP/WebSocket, SDKs, optional MCP
+  cartesia-agents/           # Managed Agents through the Cartesia MCP
+  cartesia-agents-intake/    # agent brief before building
+  cartesia-agents-prompting/ # agent instructions
 ```
 
 Each skill folder has a `SKILL.md` (whose YAML **`name`** matches the folder) and optional `references/`.
