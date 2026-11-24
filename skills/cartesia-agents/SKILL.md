@@ -17,7 +17,7 @@ Related skills:
 
 ## Rules
 
-- **MCP changes go live immediately.** Every `update_agent`, attach, or detach that changes `config` publishes a new version, and new calls use it at once. The Playground has a draft and Publish; the MCP does not. Never change an agent that takes real calls; change its dev agent (see [Dev agent](#dev-agent)).
+- **MCP changes go live immediately.** Every `update_agent`, attach, or detach that changes `config` publishes a new version, and new calls use it at once. The Playground has a draft and Publish; the MCP does not. Change an agent that takes real calls only to promote a tested change (see [Go live](#go-live)); make every other change on its dev agent (see [Dev agent](#dev-agent)).
 - **Look IDs up, never recall them.** Models come from `list_agent_models` (not `list_models`, which lists speech models). Voices come from `list_voices`. Tool, knowledge, webhook, and phone number IDs come from their list tools.
 - **Read before you write.** Call `get_agent` before `update_agent`: list and map fields replace the stored value. Use the attach and detach tools to add or remove one item.
 - **Confirm before anything real.** Calls ring real people, numbers cost money, rerouting a number changes who answers live calls, and deletes are permanent. Confirm the exact target with the user in this conversation first.
@@ -25,9 +25,9 @@ Related skills:
 
 ## Start a new agent
 
-1. If the user has not said clearly what the agent is for, use the cartesia-agents-intake skill first. It ends with an agent brief.
+1. If the user has not said clearly what the agent is for, use the cartesia-agents-intake skill first. It ends with an agent brief. Build with the defaults listed under the brief's open questions, tell the user which ones you used, and revisit each one once they answer it.
 2. Pick a model with `list_agent_models` and a voice with `list_voices`, querying for the persona and language.
-3. Write `config.instructions` with the cartesia-agents-prompting skill, and set `config.initial_message`, or leave it null so the agent waits for the caller.
+3. Write `config.instructions` and `config.initial_message` with the cartesia-agents-prompting skill.
 4. For anything that differs per caller, use `{{variable}}` placeholders with sample values in `config.dynamic_variable_placeholders`. Test calls use the samples; production calls never do.
 5. Enable the system tools the call needs. Almost every agent needs end call; add transfer if a human can take over.
 6. Call `create_agent`, give the user the `playground_url`, and start the [development loop](#development-loop).
@@ -51,7 +51,7 @@ Repeat until the user is happy:
    - send them the `playground_url`, or
    - call their phone: ask for their number in E.164 format and confirm it, find a number to call from with `list_phone_numbers` (or get one, see [Go live](#go-live)), then call `create_agent_calls` with the dev agent and a short `max_call_duration_minutes`. Cartesia-managed numbers only call US numbers.
 
-   Suggest what to try: the normal path, and the case the change was meant to fix. Before a larger change, also try a caller who goes off topic, interrupts, gives wrong details, or asks for a human. Use the brief's success criteria if there is one.
+   Suggest what to try: the normal path, and the case the change was meant to fix. Before a larger change, also try a caller who goes off topic, interrupts, gives wrong details, or asks for a human. If there is a brief, use its test calls and success checks.
 3. **Review the call.** See [Review a call](#review-a-call). Check whether the change did what it was meant to and whether anything else got worse.
 4. **Decide with the user.**
    - Keep: go back to step 1 for the next change, or go live.

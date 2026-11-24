@@ -7,7 +7,7 @@ description: Write or revise the instructions (system prompt) and introduction o
 
 `config.instructions` is the agent's system prompt and `config.initial_message` is its introduction. Every extra sentence adds latency, answers must be short, and the caller cannot reread anything. Write for that.
 
-Read the current instructions and introduction with `get_agent` first, and the agent brief if there is one. Show the user the before and after of anything you change.
+For an existing agent, read the current instructions and introduction with `get_agent` first. Read the agent brief if there is one. Show the user the before and after of anything you change.
 
 ## Say what to do
 

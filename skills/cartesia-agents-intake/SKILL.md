@@ -22,7 +22,7 @@ Most weak voice agents come from a vague goal, not a weak prompt. Before buildin
 - Inbound, outbound, or both? Phone, web, or inside the user's app?
 
 **Scope**
-- The main tasks, in the order a call usually goes.
+- The main tasks, and what each needs before the agent can finish it.
 - What the agent must not do or discuss, and what it says when asked.
 - When it hands off to a person, how (transfer to which number), and what happens out of hours.
 - When it ends the call.
@@ -58,10 +58,10 @@ Summarize what you heard in two or three sentences and ask whether that is the a
 ## Purpose
 <who it speaks for, who it talks to, the main outcome, channel>
 
-## Call flow
-1. <opening>
-2. <main tasks in order>
-3. <how the call ends>
+## What a good call covers
+- <opening: introduction, or caller speaks first>
+- <task>: <what it needs, and what a good outcome is>
+- <how the call ends>
 
 ## Out of scope
 - <topic>: <what the agent says instead>
