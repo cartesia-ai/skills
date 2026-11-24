@@ -47,9 +47,7 @@ Repeat until the user is happy:
 1. **Change one thing.** Make one change on the dev agent and set `version_description` to what changed and why. One change per version makes results comparable and rollback simple.
 
    Only changes to the agent itself (`create_agent`, `update_agent`, and the attach and detach tools) create versions. Edits to a tool, a knowledge document or folder, or an event webhook take effect for every agent that uses it, with no version to roll back to. Before editing one, check which agents use it (`get_agent_tool` with `expand`, `get_knowledge_folder`), and prefer creating a new one and attaching it to the dev agent.
-2. **Test it.** The user talks to the agent; you cannot place a test call yourself. Either:
-   - send them the `playground_url`, or
-   - call their phone: ask for their number in E.164 format and confirm it, find a number to call from with `list_phone_numbers` (or get one, see [Go live](#go-live)), then call `create_agent_calls` with the dev agent and a short `max_call_duration_minutes`. Cartesia-managed numbers only call US numbers.
+2. **Test it.** The agent must be tested by a person. Ask the user whether they'd rather talk to it in the browser or take a call on their phone. For the browser, send them the `playground_url`. For a phone call, ask for their phone number in plain words, convert it to the `+` and country code format yourself (`+14155551234`), and read it back to confirm. Find a number to call from with `list_phone_numbers` (or get one, see [Go live](#go-live)), then call `create_agent_calls` with the dev agent and a short `max_call_duration_minutes`. Cartesia-managed numbers only call US numbers.
 
    Suggest what to try: the normal path, and the case the change was meant to fix. Before a larger change, also try a caller who goes off topic, interrupts, gives wrong details, or asks for a human. If there is a brief, use its test calls and success checks.
 3. **Review the call.** See [Review a call](#review-a-call). Check whether the change did what it was meant to and whether anything else got worse.
